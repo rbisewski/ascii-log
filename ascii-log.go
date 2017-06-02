@@ -25,6 +25,7 @@ import (
     "io/ioutil"
     "os"
     "strings"
+    "time"
 )
 
 //
@@ -41,6 +42,9 @@ var (
 
     // Web location
     web_location = "/var/www/html/data/"
+
+    // Name of the IPs file on the webserver.
+    ip_log = "ip.log"
 
     // Parameter for the server type
     serverType = ""
@@ -60,7 +64,14 @@ func init() {
 func main() {
 
     // String variable to hold eventual output, as well error variable.
-    var err error     = nil
+    var err error = nil
+
+    // Variable to hold the extracted IP addresses
+    var ip_addresses = make([]string, 0)
+
+    // Variable to hold the contents of the new ip.log until it is
+    // written to disk.
+    var ip_log_contents = ""
 
     // Parse the flags, if any.
     flag.Parse()
@@ -98,8 +109,87 @@ func main() {
         os.Exit(1)
     }
 
-    // TODO: delete this
-    byte_contents_of_access_log = byte_contents_of_access_log
+    // dump the contents of the access log to a string
+    string_contents_of_access_log := string(byte_contents_of_access_log)
+
+    // if the contents are less than 1 byte, end the program
+    if len(string_contents_of_access_log) < 1 {
+        fmt.Println("Note: the following file was empty: ",
+          access_log_location)
+        fmt.Println("Exiting...")
+        os.Exit(0)
+    }
+
+    // Attempt to break up the file into an array of strings a demarked by
+    // the newline character.
+    lines := strings.Split(string_contents_of_access_log, "\n")
+
+    // terminate the program if the array has less than 1 element
+    if len(lines) < 1 {
+        fmt.Println("Warning: no line data was found, exiting...")
+        os.Exit(0)
+    }
+
+    // for every line...
+    for _, line := range lines {
+
+        // attempt to split that line via spaces
+        elements := strings.Split(line, " ")
+
+        // safety check, ensure that element actually has a length
+        // of at least 1
+        if len(elements) < 1 {
+            continue
+        }
+
+        // grab the first element, that is the IP address
+        ip := elements[0]
+
+        // ensure that the ip address is valid length
+        //
+        // 0.0.0.0 --> 8 chars (min)
+        //
+        // 123.123.123.123 --> 15 chars (max)
+        //
+        if len(ip) < 8 || len(ip) > 15 {
+            continue
+        }
+
+        // Since the IP address is indeed roughly valid, go ahead and add
+        // it to the global array.
+        ip_addresses = append(ip_addresses, ip)
+    }
+
+    // TODO: implement the below pseudo code
+
+    // attempt to calculate the number of times each ip address appears
+
+    // do a natural sort on the array of IP addresses
+
+    // attempt check if the ip.log file exists in the "web_location"
+
+        // if not, then create it
+
+    // append the title to the ip_log_contents
+    ip_log_contents += "IP Address Counts Data\n\n"
+
+    // attempt to grab the current day/month/year
+    datetime := time.Now().Format("2017-Jan-01 14:02")
+
+    // append the date to the ip_log_contents on the next line
+    ip_log_contents += "Log Generated on: " + datetime + "\n"
+    ip_log_contents += "--------------------------------"
+
+    // for every ip address
+
+        // append that address + \t + count
+
+    // if no ip addresses present, instead append a line about there being
+    // no data for today.
+
+    // attempt to write the string contents to the ip.log file
+
+        // if an error occurred, terminate the program
 
     // If all is well, we can return quietly here.
     os.Exit(0)
