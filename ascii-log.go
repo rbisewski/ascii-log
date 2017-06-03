@@ -67,7 +67,7 @@ func main() {
     var err error = nil
 
     // Variable to hold the extracted IP addresses
-    var ip_addresses = make([]string, 0)
+    var ip_addresses = make(map[string] int)
 
     // Variable to hold the contents of the new ip.log until it is
     // written to disk.
@@ -157,12 +157,10 @@ func main() {
 
         // Since the IP address is indeed roughly valid, go ahead and add
         // it to the global array.
-        ip_addresses = append(ip_addresses, ip)
+        ip_addresses[ip]++
     }
 
     // TODO: implement the below pseudo code
-
-    // attempt to calculate the number of times each ip address appears
 
     // do a natural sort on the array of IP addresses
 
