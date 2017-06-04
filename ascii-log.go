@@ -160,13 +160,30 @@ func main() {
         ip_addresses[ip]++
     }
 
-    // TODO: implement the below pseudo code
-
     // do a natural sort on the array of IP addresses
+    // TODO: implement this here
 
     // attempt check if the ip.log file exists in the "web_location"
+    if _, err = os.Stat(web_location + ip_log); os.IsNotExist(err) {
 
         // if not, then create it
+        f, creation_err := os.Create(web_location + ip_log)
+
+        // if an error occurred during creation, terminate program
+        if creation_err != nil {
+            fmt.Println(creation_err)
+            os.Exit(1)
+        }
+
+        // then go ahead and close the file connection for the time being
+        f.Close()
+    }
+
+    // if an error occurred during stat() then exit the program
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 
     // append the title to the ip_log_contents
     ip_log_contents += "IP Address Counts Data\n\n"
@@ -177,6 +194,8 @@ func main() {
     // append the date to the ip_log_contents on the next line
     ip_log_contents += "Log Generated on: " + datetime + "\n"
     ip_log_contents += "--------------------------------"
+
+    // TODO: implement the below pseudo code
 
     // for every ip address
 
