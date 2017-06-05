@@ -25,6 +25,7 @@ import (
     "io/ioutil"
     "os"
     "strings"
+    "strconv"
     "time"
 )
 
@@ -60,6 +61,8 @@ func init() {
 
 //
 // PROGRAM MAIN
+//
+// TODO: test this to ensure it will work under better conditions
 //
 func main() {
 
@@ -193,20 +196,37 @@ func main() {
 
     // append the date to the ip_log_contents on the next line
     ip_log_contents += "Log Generated on: " + datetime + "\n"
-    ip_log_contents += "--------------------------------"
-
-    // TODO: implement the below pseudo code
+    ip_log_contents += "-----------------------------------\n\n"
 
     // for every ip address
+    lines_appended := 0
+    for ip, count := range ip_addresses {
 
         // append that address + \t + count
+        ip_log_contents += "" + ip
+        ip_log_contents += "\t" + strconv.Itoa(count)
+        ip_log_contents += "\n"
+
+        // add a line counter for internal use
+        lines_appended++
+    }
 
     // if no ip addresses present, instead append a line about there being
     // no data for today.
+    if lines_appended == 0 {
+        ip_log_contents += "No IP addressed listed at this time."
+    }
 
     // attempt to write the string contents to the ip.log file
+    err = ioutil.WriteFile(web_location + ip_log,
+                           []byte(ip_log_contents),
+                           0755)
 
-        // if an error occurred, terminate the program
+    // if an error occurred, terminate the program
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 
     // If all is well, we can return quietly here.
     os.Exit(0)
