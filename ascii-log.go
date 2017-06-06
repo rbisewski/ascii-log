@@ -24,8 +24,9 @@ import (
     "flag"
     "io/ioutil"
     "os"
+    "sort"
     "strings"
-    "strconv"
+    //"strconv"
     "time"
 )
 
@@ -163,8 +164,14 @@ func main() {
         ip_addresses[ip]++
     }
 
-    // do a natural sort on the array of IP addresses
-    // TODO: implement this here
+    // convert the ip addresses map into an array of strings
+    ip_strings, err := convertIpAddressMapToString(ip_addresses)
+
+    // if an error occurred, terminate from the program
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 
     // attempt check if the ip.log file exists in the "web_location"
     if _, err = os.Stat(web_location + ip_log); os.IsNotExist(err) {
@@ -198,24 +205,10 @@ func main() {
     ip_log_contents += "Log Generated on: " + datetime + "\n"
     ip_log_contents += "-----------------------------------\n\n"
 
-    // for every ip address
-    lines_appended := 0
-    for ip, count := range ip_addresses {
-
-        // append that address + \t + count
-        ip_log_contents += "" + ip
-        ip_log_contents += "\t" + strconv.Itoa(count)
-        ip_log_contents += "\n"
-
-        // add a line counter for internal use
-        lines_appended++
-    }
-
-    // if no ip addresses present, instead append a line about there being
-    // no data for today.
-    if lines_appended == 0 {
-        ip_log_contents += "No IP addressed listed at this time."
-    }
+    // append the ip_strings content to this point of the log; it will
+    // either contain the "IPv4 Address + Daily Count" or a message stating
+    // that no addresses appear to be recorded today.
+    ip_log_contents += ip_strings
 
     // attempt to write the string contents to the ip.log file
     err = ioutil.WriteFile(web_location + ip_log,
@@ -230,4 +223,62 @@ func main() {
 
     // If all is well, we can return quietly here.
     os.Exit(0)
+}
+
+//! Convert the global IP address map to an array of sorted ipEntry objects
+/*
+ * @param     map        string map containing ip addresses and counts
+ *
+ * @return    string     ip address + count strings, with newlines
+ *                       separating them.
+ *            error      error message, if any
+ */
+func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
+
+    // input validation
+    if len(ip_map) < 1 {
+        return "", fmt.Errorf("convertIpAddressMapToString() --> " +
+          "invalid input")
+    }
+
+    // variable declaration
+    var ip_strings string = ""
+    var tmp_str_array     = make([]string, 0)
+
+    // for every IPv4 address in the given map...
+    for ip, _ := range ip_map {
+
+        // append that address to the temp string array
+        tmp_str_array = append(tmp_str_array, ip)
+    }
+
+    // sort the given list of IPv4 addresses
+    sort.Strings(tmp_str_array)
+
+    // for every ip address
+    // TODO: make this work
+    lines_appended := 0
+/*
+    for ip := range tmp_str_array {
+
+        // grab the count
+        count := ip_map[ip]
+
+        // append that address + \t + count
+        ip_strings += "" + ip
+        ip_strings += "\t" + strconv.Itoa(count)
+        ip_strings += "\n"
+
+        // add a line counter for internal use
+        lines_appended++
+    }
+*/
+    // if no ip addresses present, instead append a line about there being
+    // no data for today.
+    if lines_appended == 0 {
+        ip_strings += "No IP addressed listed at this time."
+    }
+
+    // everything worked fine, so return the completed string contents
+    return ip_strings, nil
 }
