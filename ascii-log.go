@@ -26,7 +26,7 @@ import (
     "os"
     "sort"
     "strings"
-    //"strconv"
+    "strconv"
     "time"
 )
 
@@ -256,10 +256,8 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
     sort.Strings(tmp_str_array)
 
     // for every ip address
-    // TODO: make this work
     lines_appended := 0
-/*
-    for ip := range tmp_str_array {
+    for _, ip := range tmp_str_array {
 
         // grab the count
         count := ip_map[ip]
@@ -272,7 +270,7 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         // add a line counter for internal use
         lines_appended++
     }
-*/
+
     // if no ip addresses present, instead append a line about there being
     // no data for today.
     if lines_appended == 0 {
