@@ -63,8 +63,6 @@ func init() {
 //
 // PROGRAM MAIN
 //
-// TODO: test this to ensure it will work under better conditions
-//
 func main() {
 
     // String variable to hold eventual output, as well error variable.
@@ -173,8 +171,11 @@ func main() {
         os.Exit(1)
     }
 
+    // attempt to stat() if the ip.log file even exists
+    _, err = os.Stat(web_location + ip_log)
+
     // attempt check if the ip.log file exists in the "web_location"
-    if _, err = os.Stat(web_location + ip_log); os.IsNotExist(err) {
+    if os.IsNotExist(err) {
 
         // if not, then create it
         f, creation_err := os.Create(web_location + ip_log)
