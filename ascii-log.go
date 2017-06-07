@@ -100,7 +100,7 @@ func main() {
     }
 
     // Assemble the access.log file location.
-    access_log_location := log_directory + serverType + access_log
+    access_log_location := log_directory + serverType + "/" + access_log
 
     // Check if access log file actually exists.
     byte_contents_of_access_log, err := ioutil.ReadFile(access_log_location)
