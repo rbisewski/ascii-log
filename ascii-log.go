@@ -210,7 +210,7 @@ func main() {
         ip_log_contents += "IP Address Counts Data\n\n"
 
         // attempt to grab the current day/month/year
-        datetime := time.Now().Format("2017-Jan-01 14:02")
+        datetime := time.Now().Format("1999-Jan-01 1:23")
 
         // append the date to the ip_log_contents on the next line
         ip_log_contents += "Log Generated on: " + datetime + "\n"
@@ -237,14 +237,18 @@ func main() {
             break
         }
 
+        // TODO: implement the pseudo code below this line
+
+        // take the current time and increment 24 hours
+
         // since the user has selected daemon mode, wait 24 hours
-        // TODO: make this work
-/*
         for {
-            // grab the time
+            break
+
+            // grab the current time
+
+            // if an entire day has passed, go ahead and break
         }
-*/
-        break
     }
 
     // If all is well, we can return quietly here.
