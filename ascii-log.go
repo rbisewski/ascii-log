@@ -237,17 +237,20 @@ func main() {
             break
         }
 
-        // TODO: implement the pseudo code below this line
-
         // take the current time and increment 24 hours
+        currentTime := time.Now()
+        oneDayLater := currentTime.AddDate(0,0,1)
 
         // since the user has selected daemon mode, wait 24 hours
         for {
-            break
 
             // grab the current time
+            currentTime = time.Now()
 
             // if an entire day has passed, go ahead and break
+            if currentTime.After(oneDayLater) {
+                break
+            }
         }
     }
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=Ascii-log Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/ascii-log --daemon-mode
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
