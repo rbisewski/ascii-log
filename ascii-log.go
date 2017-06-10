@@ -210,11 +210,11 @@ func main() {
         ip_log_contents += "IP Address Counts Data\n\n"
 
         // attempt to grab the current day/month/year
-        datetime := time.Now().Format("1999-Jan-01 1:23")
+        datetime := time.Now().Format(time.UnixDate)
 
         // append the date to the ip_log_contents on the next line
         ip_log_contents += "Log Generated on: " + datetime + "\n"
-        ip_log_contents += "-----------------------------------\n\n"
+        ip_log_contents += "------------------------------------------\n\n"
 
         // append the ip_strings content to this point of the log; it will
         // either contain the "IPv4 Address + Daily Count" or a message stating
