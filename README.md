@@ -14,6 +14,7 @@ projects if you find it useful.
 The following is needed in order for this to function as intended:
 
 * Linux kernel 4.0+
+* cron
 * golang 1.6+
 * apache / nginx
 
