@@ -1,9 +1,8 @@
 #!/bin/sh
 
-#
-# TODO: implement the below pseudo code
-#
+set -e
 
-# set -e
-
-# */*/*/24 /usr/bin/ascii-log
+#
+# Run the ascii-log program at 00:05 every day.
+#
+5 0 * * * /usr/bin/ascii-log >/dev/null 2>&1

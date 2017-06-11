@@ -23,25 +23,14 @@ build:
 clean:
 	@go clean
 
-#
-# TODO: test this on more distros
-#
 install: build
 	@echo installing executable file to /usr/bin/ascii-log
 	@sudo cp ascii-log /usr/bin/ascii-log
-	@sudo mkdir -p /etc/systemd/system/
-	@sudo cp ascii-log.service /etc/systemd/system/ascii-log.service
-	@sudo systemctl daemon-reload
-	@sudo systemctl enable ascii-log
-	@sudo systemctl start ascii-log
+	@echo installing cron file to /etc/cron.d/ascii-log
+	@sudo cp ascii-log.cron /etc/cron.d/ascii-log
 
-#
-# TODO: test this on more distros
-#
 uninstall: clean
 	@echo removing executable file from /usr/bin/ascii-log
-	@sudo systemctl stop ascii-log
-	@sudo systemctl disable ascii-log
-	@sudo systemctl daemon-reload
 	@sudo rm /usr/bin/ascii-log
-	@sudo rm /etc/systemd/system/ascii-log.service
+	@echo removing cron file from /etc/cron.d/ascii-log
+	@sudo rm /etc/cron.d/ascii-log

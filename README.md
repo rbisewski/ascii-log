@@ -37,6 +37,9 @@ this is incorrect.
 
     vim /etc/cron.d/ascii-log
 
+Alternatively, if you are running Arch Linux w/ systemd, you can use the
+included ascii-log.service instead. However, the cron job is recommended
+since it has greater compatibility with more distros.
 
 # Uninstallation
 
@@ -44,6 +47,9 @@ this is incorrect.
 
     make uninstall
 
+2) Consider cleaning up any remaining logs, if they are no longer needed.
+
+    rm /var/www/html/data/ip.log
 
 # Author
 
