@@ -182,6 +182,7 @@ func main() {
         }
 
         // attempt to stat() if the ip.log file even exists
+        fileNotFoundAndWasCreated := false
         _, err = os.Stat(web_location + ip_log)
 
         // attempt check if the ip.log file exists in the "web_location"
@@ -198,10 +199,15 @@ func main() {
 
             // then go ahead and close the file connection for the time being
             f.Close()
+
+            // if the program go to actually create the file, go ahead and
+            // set this flag to true
+            fileNotFoundAndWasCreated = true
         }
 
-        // if an error occurred during stat() then exit the program
-        if err != nil {
+        // if an error occurred during stat(), yet the program was unable
+        // to recover or recreate the file, then exit the program
+        if err != nil && !fileNotFoundAndWasCreated {
             fmt.Println(err)
             os.Exit(1)
         }
@@ -214,7 +220,7 @@ func main() {
 
         // append the date to the ip_log_contents on the next line
         ip_log_contents += "Log Generated on: " + datetime + "\n"
-        ip_log_contents += "------------------------------------------\n\n"
+        ip_log_contents += "--------------------------------------------\n\n"
 
         // append the ip_strings content to this point of the log; it will
         // either contain the "IPv4 Address + Daily Count" or a message stating
