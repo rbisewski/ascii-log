@@ -142,8 +142,32 @@ func main() {
             os.Exit(0)
         }
 
+        // determine the last valid line
+        last_line_num := len(lines)-2
+
+        // safety check, ensure the value is at least zero
+        if last_line_num < 0 {
+            last_line_num = 0
+        }
+
+        // obtain the contents of the last line
+        last_line := lines[last_line_num]
+
+        // extract the date of the last line, this is so that the program can
+        // gather data concerning only the latest entries
+        latest_date_in_log, err := obtainLatestDate(last_line)
+
+        // check if an error occurred
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
         // for every line...
         for _, line := range lines {
+
+            // TODO: implement this part
+            // skip a line if the entry is not the latest date
 
             // attempt to split that line via spaces
             elements := strings.Split(line, " ")
@@ -219,8 +243,10 @@ func main() {
         datetime := time.Now().Format(time.UnixDate)
 
         // append the date to the ip_log_contents on the next line
-        ip_log_contents += "Log Generated on: " + datetime + "\n"
-        ip_log_contents += "--------------------------------------------\n\n"
+        ip_log_contents += "Generated on: " + datetime + "\n"
+        ip_log_contents += "\n"
+        ip_log_contents += "Log Data for " + latest_date_in_log + "\n"
+        ip_log_contents += "-------------------------\n\n"
 
         // append the ip_strings content to this point of the log; it will
         // either contain the "IPv4 Address + Daily Count" or a message stating
@@ -262,6 +288,69 @@ func main() {
 
     // If all is well, we can return quietly here.
     os.Exit(0)
+}
+
+//! Determine the latest date present in the logs
+/*
+ * @param     string    line data
+ *
+ * @return    string    latest time-date, in the form of DD/MMM/YYYY
+ *            error     error message, if any
+ */
+func obtainLatestDate(line_data string) (string, error) {
+
+    // input validation
+    if len(line_data) < 1 {
+        return "", fmt.Errorf("obtainLatestDate() --> invalid input")
+    }
+
+    // variable declaration
+    var result string = ""
+
+    // attempt to split that line via spaces
+    elements := strings.Split(line_data, " ")
+
+    // safety check, ensure there are at least 4 elements
+    if len(elements) < 4 {
+
+        // otherwise send back an error
+        return "", fmt.Errorf("obtainLatestDate() --> poorly formatted line")
+    }
+
+    // attempt to grab the fourth element
+    datetime := elements[3]
+
+    // attempt to trim the string of [ and ] brackets
+    datetime = strings.Trim(datetime, "[]")
+
+    // ensure the string actually has at least a length of 1
+    if len(datetime) < 1 {
+        return "", fmt.Errorf("obtainLatestDate() --> date-time string " +
+          "is of improper length")
+    }
+
+    // split the string via the ':' characters
+    time_pieces := strings.SplitAfter(datetime, ":")
+
+    // ensure there is at least one element
+    if len(time_pieces) < 1 || len(time_pieces[0]) < 1 {
+        return "", fmt.Errorf("obtainLatestDate() --> unable to use _:_ " +
+          "chars to separate time into pieces")
+    }
+
+    // trim away the remaining : chars
+    result = strings.Trim(time_pieces[0], ":")
+
+    // final safety check, ensure that the result has a len > 0
+    if len(result) < 1 {
+
+        // otherwise send back an error
+        return "", fmt.Errorf("obtainLatestDate() --> unable to " +
+          "assemble string result")
+    }
+
+    // if everything turned out fine, go ahead and return
+    return result, nil
 }
 
 //! Convert the global IP address map to an array of sorted ipEntry objects
