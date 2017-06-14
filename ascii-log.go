@@ -24,6 +24,7 @@ import (
     "flag"
     "io/ioutil"
     "os"
+    "regexp"
     "sort"
     "strings"
     "strconv"
@@ -163,11 +164,19 @@ func main() {
             os.Exit(1)
         }
 
+        // turn the latest data string into a regex
+        re := regexp.MustCompile(latest_date_in_log)
+
         // for every line...
         for _, line := range lines {
 
-            // TODO: implement this part
+            // verify that a match could be found
+            verify := re.FindString(line)
+
             // skip a line if the entry is not the latest date
+            if len(verify) < 1 {
+                continue
+            }
 
             // attempt to split that line via spaces
             elements := strings.Split(line, " ")
