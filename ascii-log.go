@@ -402,6 +402,9 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         // TODO: implement this pseudo code
 
         // ensure the `host` command exists on the system
+        //
+        // NOTE: the golang "os" or "net" package might already have
+        //       something similar
 
             // if not, then treat it as "N/A"
 
