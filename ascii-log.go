@@ -399,9 +399,22 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         // grab the count
         count := ip_map[ip]
 
-        // append that address + \t + count
+        // TODO: implement this pseudo code
+
+        // ensure the `host` command exists on the system
+
+            // if not, then treat it as "N/A"
+
+        // take the given IP address and attempt to grab the hostname
+
+        // safe check, ensure the hostname actually is a valid string
+
+            // if not, then treat it as "N/A"
+
+        // append that address + \t + --> + hostname + \t + count
         ip_strings += "" + ip
         ip_strings += "\t" + strconv.Itoa(count)
+        // TODO: attach hostname here, if any...
         ip_strings += "\n"
 
         // add a line counter for internal use
