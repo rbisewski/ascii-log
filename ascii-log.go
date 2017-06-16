@@ -422,12 +422,12 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
             first_hostname = hostnames[0]
         }
 
-        // append that address |  hostname | count
+        // append that count | address |  hostname
+        ip_strings += strconv.Itoa(count) + "\t"
+        ip_strings += " | "
         ip_strings += ip + "\t"
         ip_strings += " | "
-        ip_strings += "\t" + first_hostname + "\t"
-        ip_strings += " | "
-        ip_strings += "\t" + strconv.Itoa(count)
+        ip_strings += "\t" + first_hostname
         ip_strings += "\n"
 
         // add a line counter for internal use
