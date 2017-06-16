@@ -370,6 +370,9 @@ func obtainLatestDate(line_data string) (string, error) {
  * @return    string     ip address + count strings, with newlines
  *                       separating them.
  *            error      error message, if any
+ *
+ *
+ * NOTE: this function could use more testing
  */
 func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
@@ -402,18 +405,11 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         count := ip_map[ip]
 
         // take the given IP address and attempt to grab the hostname
-        //
-        // TODO: test this thoroughly
-        //
         hostnames, err := net.LookupAddr(ip)
 
-        // ensure no error has occurred
-        if err != nil {
-            return "",err
-        }
-
-        // default to "N/A" as the default hostname if none currently exist
-        if len(hostnames) < 1 {
+        // default to "N/A" as the default hostname if an error occurred
+        // or no hostnames could be currently found...
+        if err != nil || len(hostnames) < 1 {
             first_hostname = "N/A"
 
         // default to "N/A" as the default hostname if the hostname is
@@ -426,9 +422,11 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
             first_hostname = hostnames[0]
         }
 
-        // append that address + \t + --> + hostname + \t + count
-        ip_strings += ip + "\t--->"
-        ip_strings += "\t" + first_hostname
+        // append that address |  hostname | count
+        ip_strings += ip + "\t"
+        ip_strings += " | "
+        ip_strings += "\t" + first_hostname + "\t"
+        ip_strings += " | "
         ip_strings += "\t" + strconv.Itoa(count)
         ip_strings += "\n"
 
