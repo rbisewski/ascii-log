@@ -23,6 +23,7 @@ import (
     "fmt"
     "flag"
     "io/ioutil"
+    "net"
     "os"
     "regexp"
     "sort"
@@ -379,8 +380,10 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
     }
 
     // variable declaration
-    var ip_strings string = ""
-    var tmp_str_array     = make([]string, 0)
+    var ip_strings string     = ""
+    var tmp_str_array         = make([]string, 0)
+    var lines_appended uint   = 0
+    var first_hostname string = ""
 
     // for every IPv4 address in the given map...
     for ip, _ := range ip_map {
@@ -393,31 +396,40 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
     sort.Strings(tmp_str_array)
 
     // for every ip address
-    lines_appended := 0
     for _, ip := range tmp_str_array {
 
         // grab the count
         count := ip_map[ip]
 
-        // TODO: implement this pseudo code
-
-        // ensure the `host` command exists on the system
-        //
-        // NOTE: the golang "os" or "net" package might already have
-        //       something similar
-
-            // if not, then treat it as "N/A"
-
         // take the given IP address and attempt to grab the hostname
+        //
+        // TODO: test this thoroughly
+        //
+        hostnames, err := net.LookupAddr(ip)
 
-        // safe check, ensure the hostname actually is a valid string
+        // ensure no error has occurred
+        if err != nil {
+            return "",err
+        }
 
-            // if not, then treat it as "N/A"
+        // default to "N/A" as the default hostname if none currently exist
+        if len(hostnames) < 1 {
+            first_hostname = "N/A"
+
+        // default to "N/A" as the default hostname if the hostname is
+        // blank or currently NXDOMAIN and etc.
+        } else if len(hostnames[0]) < 1 {
+            first_hostname = "N/A"
+
+        // Otherwise go ahead and use the first available hostname
+        } else {
+            first_hostname = hostnames[0]
+        }
 
         // append that address + \t + --> + hostname + \t + count
-        ip_strings += "" + ip
+        ip_strings += ip + "\t--->"
+        ip_strings += "\t" + first_hostname
         ip_strings += "\t" + strconv.Itoa(count)
-        // TODO: attach hostname here, if any...
         ip_strings += "\n"
 
         // add a line counter for internal use
