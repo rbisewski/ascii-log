@@ -422,12 +422,19 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
             first_hostname = hostnames[0]
         }
 
+        // since the \t character tends to get mangled easily, add a buffer
+        // of single-space characters instead to the IPv4 addresses
+        space_formatted_ip_address := ip
+        for len(space_formatted_ip_address) < 16 {
+            space_formatted_ip_address += " "
+        }
+
         // append that count | address |  hostname
         ip_strings += strconv.Itoa(count) + "\t"
         ip_strings += " | "
-        ip_strings += ip + "\t"
+        ip_strings += space_formatted_ip_address
         ip_strings += " | "
-        ip_strings += "\t" + first_hostname
+        ip_strings += first_hostname
         ip_strings += "\n"
 
         // add a line counter for internal use
