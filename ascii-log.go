@@ -391,6 +391,13 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
     // for every IPv4 address in the given map...
     for ip, _ := range ip_map {
 
+        // workaround, to better sort IP addresses
+        if strings.Index(ip, ".") == 1 {
+            ip = "00" + ip
+        } else if strings.Index(ip, ".") == 2 {
+            ip = "0" + ip
+        }
+
         // append that address to the temp string array
         tmp_str_array = append(tmp_str_array, ip)
     }
@@ -400,6 +407,9 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
     // for every ip address
     for _, ip := range tmp_str_array {
+
+        // workaround, trim away any LHS zeros
+        ip = strings.TrimLeft(ip, "0")
 
         // grab the count
         count := ip_map[ip]
