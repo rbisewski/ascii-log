@@ -1,7 +1,7 @@
 # ascii-log- harvests data from server logs and displays it via ASCII
 
 A cut and dry golang application to generate daily data from log file
-entries of nginx servers and outputs it to a text file so it can be access
+entries of nginx servers and output it to a text file so it can be accessed
 via w3m or lynx or wget.
 
 Maybe one day I could consider adding more functionality, but for now it
