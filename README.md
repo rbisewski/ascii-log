@@ -1,12 +1,15 @@
 # ascii-log- harvests data from server logs and displays it via ASCII
 
 A cut and dry golang application to generate daily data from log file
-entries of nginx servers and output it to a text file so it can be accessed
-via w3m or lynx or wget.
+entries of common servers, such as nginx or apache and output it to a
+text file so it can be accessed via w3m or lynx or wget.
 
-Maybe one day I could consider adding more functionality, but for now it
-is more of a simple tool. Feel free to fork it and use it for other
-projects if you find it useful.
+Specifically it takes IP address data and executes a simple hostname
+lookup for the purposes of examining what name is currently assigned
+at the moment of the server request.
+
+Feel free to fork it and use it for other projects if you find it
+useful.
 
 
 # Requirements
