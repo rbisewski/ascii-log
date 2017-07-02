@@ -47,8 +47,11 @@ var (
     // Web location
     web_location = "/var/www/html/data/"
 
-    // Name of the IPs file on the webserver.
+    // Name of the IP log file on the webserver.
     ip_log = "ip.log"
+
+    // Name of the whois log file on the webserver.
+    whois_log = "whois.log"
 
     // Parameter for the server type
     serverType = ""
@@ -273,6 +276,25 @@ func main() {
             fmt.Println(err)
             os.Exit(1)
         }
+
+        // TODO: implement the below pseudo code
+
+        // check if the whois.log file is present in the system
+        whois_log = whois_log
+
+        // if not, create it in the given server data folder
+
+        // check if the whois command is present in the system
+
+            // for each of the ip addresses
+
+                // attempt to obtain the whois record
+
+                // if an error occurs, break out of the loop
+
+                // if no record is present, pass back a "N/A"
+
+                // otherwise append it to a given whois.log file
 
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
