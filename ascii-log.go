@@ -436,9 +436,6 @@ func obtainLatestDate(line_data string) (string, error) {
  * @return    string     ip address + count strings, with newlines
  *                       separating them.
  *            error      error message, if any
- *
- *
- * TODO: this function could use more testing
  */
 func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
