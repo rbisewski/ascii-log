@@ -83,9 +83,10 @@ func main() {
     // Variable to hold the extracted IP addresses
     var ip_addresses = make(map[string] int)
 
-    // Variable to hold the contents of the new ip.log until it is
-    // written to disk.
-    var ip_log_contents = ""
+    // Variable to hold the contents of the new ip.log and whois log until
+    // it is written to disk.
+    var ip_log_contents    = ""
+    var whois_log_contents = ""
 
     // Parse the flags, if any.
     flag.Parse()
@@ -218,33 +219,13 @@ func main() {
             os.Exit(1)
         }
 
-        // attempt to stat() if the ip.log file even exists
-        fileNotFoundAndWasCreated := false
-        _, err = os.Stat(web_location + ip_log)
-
-        // attempt check if the ip.log file exists in the "web_location"
-        if os.IsNotExist(err) {
-
-            // if not, then create it
-            f, creation_err := os.Create(web_location + ip_log)
-
-            // if an error occurred during creation, terminate program
-            if creation_err != nil {
-                fmt.Println(creation_err)
-                os.Exit(1)
-            }
-
-            // then go ahead and close the file connection for the time being
-            f.Close()
-
-            // if the program go to actually create the file, go ahead and
-            // set this flag to true
-            fileNotFoundAndWasCreated = true
-        }
+        // attempt to stat() the ip.log file, else create it if it does
+        // not currently exist
+        err = statOrCreateFile(web_location + ip_log)
 
         // if an error occurred during stat(), yet the program was unable
         // to recover or recreate the file, then exit the program
-        if err != nil && !fileNotFoundAndWasCreated {
+        if err != nil {
             fmt.Println(err)
             os.Exit(1)
         }
@@ -277,24 +258,39 @@ func main() {
             os.Exit(1)
         }
 
-        // TODO: implement the below pseudo code
+        // attempt to obtain the whois entries, as a string
+        whois_strings, err := obtainWhoisEntries(ip_addresses)
 
-        // check if the whois.log file is present in the system
-        whois_log = whois_log
+        // if an error occurred, terminate the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
 
-        // if not, create it in the given server data folder
+        // append the title to the whois_log_contents
+        whois_log_contents += "Whois Entry Data\n\n"
 
-        // check if the whois command is present in the system
+        // append the date to the whois_log_contents on the next line
+        whois_log_contents += "Generated on: " + datetime + "\n"
+        whois_log_contents += "\n"
+        whois_log_contents += "Log Data for " + latest_date_in_log + "\n"
+        whois_log_contents += "-------------------------\n\n"
 
-            // for each of the ip addresses
+        // append the whois entry strings to the whois log contents
+        whois_log_contents += whois_strings
 
-                // attempt to obtain the whois record
+        // attempt to stat() the whois.log file, else create it if it does
+        // not currently exist
+        err = statOrCreateFile(web_location + whois_log)
 
-                // if an error occurs, break out of the loop
+        // if an error occurred during stat(), yet the program was unable
+        // to recover or recreate the file, then exit the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
 
-                // if no record is present, pass back a "N/A"
-
-                // otherwise append it to a given whois.log file
+        // TODO: add code here to write the file contents to the whois log
 
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
@@ -320,6 +316,54 @@ func main() {
 
     // If all is well, we can return quietly here.
     os.Exit(0)
+}
+
+//! Stat if a given file exists at specified path, else create it.
+/*
+ * @param     string    /path/to/filename
+ *
+ * @return    error     error message, if any
+ */
+func statOrCreateFile(path string) error {
+
+    // input validation, ensure the file location is sane
+    if len(path) < 1 {
+        return fmt.Errorf("statOrCreateFile() --> invalid input")
+    }
+
+    // variable declaration
+    var fileNotFoundAndWasCreated bool = false
+
+    // attempt to stat() if the whois.log file even exists
+    _, err := os.Stat(path)
+
+    // attempt check if the file exists at the given path
+    if os.IsNotExist(err) {
+
+        // if not, then create it
+        f, creation_err := os.Create(path)
+
+        // if an error occurred during creation, terminate program
+        if creation_err != nil {
+            return creation_err
+        }
+
+        // then go ahead and close the file connection for the time being
+        f.Close()
+
+        // if the program go to actually create the file, go ahead and
+        // set this flag to true
+        fileNotFoundAndWasCreated = true
+    }
+
+    // if an error occurred during stat(), yet the program was unable
+    // to recover or recreate the file, then exit the program
+    if err != nil && !fileNotFoundAndWasCreated {
+        return err
+    }
+
+    // else everything worked, so go ahead and return nil
+    return nil
 }
 
 //! Determine the latest date present in the logs
@@ -394,7 +438,7 @@ func obtainLatestDate(line_data string) (string, error) {
  *            error      error message, if any
  *
  *
- * NOTE: this function could use more testing
+ * TODO: this function could use more testing
  */
 func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
@@ -481,4 +525,50 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
     // everything worked fine, so return the completed string contents
     return ip_strings, nil
+}
+
+//! Convert the global IP address map to string containing whois entries
+/*
+ * @param     map        string map containing ip addresses and counts
+ *
+ * @return    string     whois + ip, with hyphens and newlines
+ *                       separating them.
+ *            error      error message, if any
+ *
+ *
+ * TODO: this function could use more testing
+ */
+func obtainWhoisEntries(ip_map map[string] int) (string, error) {
+
+    // input validation
+    if len(ip_map) < 1 {
+        return "", fmt.Errorf("obtainWhoisEntries() --> invalid input")
+    }
+
+    // variable declaration
+    var whois_strings string = ""
+    var lines_appended uint  = 0
+
+    // TODO: implement the below pseudo code
+
+    // check if the whois command is present in the system
+
+        // for each of the ip addresses
+
+            // attempt to obtain the whois record
+
+            // if an error occurs, break out of the loop
+
+            // if no record is present, pass back a "N/A"
+
+            // otherwise append it
+
+    // if no ip addresses present, instead append a line about there being
+    // no data for today.
+    if lines_appended == 0 {
+        whois_strings += "No whois entries given at this time."
+    }
+
+    // everything worked fine, so return the completed string contents
+    return whois_strings, nil
 }
