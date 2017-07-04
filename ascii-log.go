@@ -544,7 +544,8 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
  *            error      error message, if any
  *
  *
- * TODO: this function could use more testing
+ * TODO: this function could use more testing, also consider gathering more
+ *       interesting data from WHOIS data
  */
 func obtainWhoisEntries(ip_map map[string] int) (string, error) {
 
@@ -554,11 +555,11 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
     }
 
     // variable declaration
-    var whois_strings string = ""
-    var lines_appended uint  = 0
-    var tmp_str_array        = make([]string, 0)
-    var tmp_str_buffer       = ""
-    var trimmed_string       = ""
+    var whois_strings string  = ""
+    var entries_appended uint = 0
+    var tmp_str_array         = make([]string, 0)
+    var tmp_str_buffer        = ""
+    var trimmed_string        = ""
     var err error
     var result bytes.Buffer
 
@@ -632,11 +633,14 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
         whois_strings += trimmed_string
         whois_strings += "\n\n"
         whois_strings += "---------------------\n\n"
+
+        // since an entry was appended, make a note of it
+        entries_appended++
     }
 
     // if no ip addresses present, instead append a line about there being
     // no data for today.
-    if lines_appended == 0 {
+    if entries_appended == 0 {
         whois_strings += "No whois entries given at this time."
     }
 
