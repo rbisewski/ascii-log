@@ -20,11 +20,13 @@ package main
 // Imports
 //
 import (
+    "bytes"
     "fmt"
     "flag"
     "io/ioutil"
     "net"
     "os"
+    "os/exec"
     "regexp"
     "sort"
     "strings"
@@ -36,6 +38,12 @@ import (
 // Globals
 //
 var (
+
+    // IANA Server
+    ianaServer = "whois.iana.org"
+
+    // Alt Whois Server
+    whoisServer = "whois.arin.net"
 
     // Current location of the log directory.
     log_directory = "/var/log/"
@@ -545,20 +553,69 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
     // variable declaration
     var whois_strings string = ""
     var lines_appended uint  = 0
+    var tmp_str_array        = make([]string, 0)
+    var tmp_str_buffer       = ""
+    var err error
+    var result bytes.Buffer
 
-    // TODO: implement the below pseudo code
+    // for every IPv4 address in the given map...
+    for ip, _ := range ip_map {
 
-    // check if the whois command is present in the system
+        // workaround, to better sort IP addresses
+        if strings.Index(ip, ".") == 1 {
+            ip = "00" + ip
+        } else if strings.Index(ip, ".") == 2 {
+            ip = "0" + ip
+        }
 
-        // for each of the ip addresses
+        // append that address to the temp string array
+        tmp_str_array = append(tmp_str_array, ip)
+    }
 
-            // attempt to obtain the whois record
+    // sort the given list of IPv4 addresses
+    sort.Strings(tmp_str_array)
 
-            // if an error occurs, break out of the loop
+    // for every ip address
+    for _, ip := range tmp_str_array {
 
-            // if no record is present, pass back a "N/A"
+        // workaround, trim away any LHS zeros
+        ip = strings.TrimLeft(ip, "0")
 
-            // otherwise append it
+        // safety check, skip to the next entry if this one is of length
+        // zero
+        if len(ip) < 1 {
+            continue
+        }
+
+        // attempt to obtain the whois record
+        result, err = runWhoisCommand("-h", ianaServer, ip)
+
+        // if an error occurs, break out of the loop
+        if err != nil {
+            break
+        }
+
+        // convert the byte buffer to a string
+        tmp_str_buffer = result.String()
+
+        // if no record is present, pass back a "N/A"
+        if len(tmp_str_buffer) < 1 || tmp_str_buffer == "<nil>" {
+            whois_strings += "Whois Entry for the following: "
+            whois_strings += ip
+            whois_strings += "\n"
+            whois_strings += "N/A\n\n"
+            whois_strings += "---------------------\n\n"
+            continue
+        }
+
+        // TODO: implement the below pseudo code
+
+        // trim it to remove potential whitespace
+
+        // ensure it still has a length of zero
+
+        // then go ahead and append it
+    }
 
     // if no ip addresses present, instead append a line about there being
     // no data for today.
@@ -568,4 +625,33 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
 
     // everything worked fine, so return the completed string contents
     return whois_strings, nil
+}
+
+//! Attempt to execute the whois command.
+/*
+ *  @param    ...string    list of arguments
+ *
+ *  @return   bytes[]      array of byte buffer data
+ */
+func runWhoisCommand(args ...string) (bytes.Buffer, error) {
+
+    // variable declaration
+    var output bytes.Buffer
+
+    // assemble the command from the list of string arguments
+    cmd := exec.Command("whois", args...)
+    cmd.Stdout = &output
+    cmd.Stderr = &output
+
+    // attempt to execute the command
+    err := cmd.Run()
+
+    // if an error occurred, go ahead and pass it back
+    if err != nil {
+        return output, err
+    }
+
+    // having ran the command, pass back the result if no error has
+    // occurred
+    return output, nil
 }
