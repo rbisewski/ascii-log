@@ -298,7 +298,10 @@ func main() {
             os.Exit(1)
         }
 
-        // TODO: add code here to write the file contents to the whois log
+        // attempt to write the string contents to the ip.log file
+        err = ioutil.WriteFile(web_location + whois_log,
+                               []byte(whois_log_contents),
+                               0755)
 
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
@@ -555,6 +558,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
     var lines_appended uint  = 0
     var tmp_str_array        = make([]string, 0)
     var tmp_str_buffer       = ""
+    var trimmed_string       = ""
     var err error
     var result bytes.Buffer
 
@@ -608,13 +612,26 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
             continue
         }
 
-        // TODO: implement the below pseudo code
-
         // trim it to remove potential whitespace
+        trimmed_string = strings.Trim(tmp_str_buffer, " ")
 
         // ensure it still has a length of zero
+        if len(trimmed_string) < 1 {
+            whois_strings += "Whois Entry for the following: "
+            whois_strings += ip
+            whois_strings += "\n"
+            whois_strings += "N/A\n\n"
+            whois_strings += "---------------------\n\n"
+            continue
+        }
 
-        // then go ahead and append it
+        // otherwise it's probably good, then go ahead and append it
+        whois_strings += "Whois Entry for the following: "
+        whois_strings += ip
+        whois_strings += "\n"
+        whois_strings += trimmed_string
+        whois_strings += "\n\n"
+        whois_strings += "---------------------\n\n"
     }
 
     // if no ip addresses present, instead append a line about there being
