@@ -39,12 +39,6 @@ import (
 //
 var (
 
-    // IANA Server
-    ianaServer = "whois.iana.org"
-
-    // Alt Whois Server
-    whoisServer = "whois.arin.net"
-
     // Current location of the log directory.
     log_directory = "/var/log/"
 
@@ -593,7 +587,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
         }
 
         // attempt to obtain the whois record
-        result, err = runWhoisCommand("-h", ianaServer, ip)
+        result, err = runWhoisCommand(ip)
 
         // if an error occurs, break out of the loop
         if err != nil {
