@@ -53,6 +53,12 @@ var (
     // Parameter for the server type
     serverType = ""
 
+    // Valid server types
+    validServerTypes = []string{"apache", "nginx"}
+
+    // Boolean to flag whether a given server is valid or not
+    serverIsValid = false
+
     // Argument for enabling daemon mode
     daemonMode = false
 )
@@ -92,7 +98,17 @@ func main() {
     serverType = strings.ToLower(serverType)
 
     // Print the usage message if not nginx or apache.
-    if (serverType != "nginx") && (serverType != "apache") {
+    for _, t := range validServerTypes {
+
+        // check if a given server is valid or not
+        if t == serverType {
+            serverIsValid = true
+            break
+        }
+    }
+
+    // Print the usage message if the server is an unknown type.
+    if !serverIsValid {
         flag.Usage()
         os.Exit(1)
     }
