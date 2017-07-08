@@ -13,6 +13,7 @@ package main
 import (
     "bytes"
     "fmt"
+    "io/ioutil"
     "net"
     "os"
     "os/exec"
@@ -20,6 +21,53 @@ import (
     "sort"
     "strconv"
 )
+
+//! Convert a file into a string array as per a given separator
+/*
+ * @param     string      /path/to/file
+ * @param     string      tokenizer character sequence
+ *
+ * @return    string[]    array of lines
+ */
+func tokenizeFile(filepath string, separator string) ([]string,
+  error) {
+
+    // input validation
+    if len(filepath) < 1 || len(separator) < 1 {
+        return nil, fmt.Errorf("tokenizeFile() --> invalid input")
+    }
+
+    // Check if access log file actually exists.
+    byte_contents, err := ioutil.ReadFile(filepath)
+
+    // if an error occurs at this point, it is due to the program being
+    // unable to access a read the file, so pass back an error
+    if err != nil {
+        return nil, fmt.Errorf("tokenizeFile() --> An error occurred " +
+          "while trying to read the following file: ", filepath)
+    }
+
+    // dump the contents of the file to a string
+    string_contents := string(byte_contents)
+
+    // if the contents are less than 1 byte, mention that via error
+    if len(string_contents) < 1 {
+        return nil, fmt.Errorf("tokenizeFile() --> the following file " +
+          "was empty: ", filepath)
+    }
+
+    // attempt to break up the file into an array of strings
+    str_array := strings.Split(string_contents, separator)
+
+    // terminate the program if the array has less than 1 element
+    if len(str_array) < 1 {
+        return nil, fmt.Errorf("tokenizeFile() --> no string data was " +
+          "found")
+    }
+
+    // having obtained the lines of data, pass them back
+    return str_array, nil
+}
 
 //! Stat if a given file exists at specified path, else create it.
 /*

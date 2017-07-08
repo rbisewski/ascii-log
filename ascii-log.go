@@ -91,9 +91,9 @@ func main() {
 
     // Variable to hold the contents of the new ip.log and whois log until
     // it is written to disk.
-    var ip_log_contents       = ""
-    var whois_log_contents    = ""
-    var redirect_log_contents = ""
+    var ip_log_contents string       = ""
+    var whois_log_contents string    = ""
+    var redirect_log_contents string = ""
 
     // Parse the flags, if any.
     flag.Parse()
@@ -133,35 +133,13 @@ func main() {
     // main infinite loop...
     for {
 
-        // Check if access log file actually exists.
-        byte_contents_of_access_log, err := ioutil.ReadFile(access_log_location)
-
-        // ensure no error occurred
-        if err != nil {
-            fmt.Println("An error occurred while trying to read the " +
-              "following file: ", access_log_location)
-            fmt.Println(err)
-            os.Exit(1)
-        }
-
-        // dump the contents of the access log to a string
-        string_contents_of_access_log := string(byte_contents_of_access_log)
-
-        // if the contents are less than 1 byte, end the program
-        if len(string_contents_of_access_log) < 1 {
-            fmt.Println("Note: the following file was empty: ",
-              access_log_location)
-            fmt.Println("Exiting...")
-            os.Exit(0)
-        }
-
         // Attempt to break up the file into an array of strings a demarked by
         // the newline character.
-        lines := strings.Split(string_contents_of_access_log, "\n")
+        lines, err := tokenizeFile(access_log_location, "\n")
 
-        // terminate the program if the array has less than 1 element
-        if len(lines) < 1 {
-            fmt.Println("Warning: no line data was found, exiting...")
+        // if an error occurred, print it out and terminate the program
+        if err != nil {
+            fmt.Println(err)
             os.Exit(0)
         }
 
@@ -312,13 +290,18 @@ func main() {
                                []byte(whois_log_contents),
                                0755)
 
-        // TODO: implement this pseudo code
+        // for every line...
+        for _, line := range lines {
 
-        // for every line in the access.log file
+            // verify that a match could be found
+            verify := re.FindString(line)
 
-            // ensure the entry line is the latest date
+            // skip a line if the entry is not the latest date
+            if len(verify) < 1 {
+                continue
+            }
 
-                // ... else skip to the next line
+            // TODO: implement this pseudo code
 
             // attempt to obtain the 1st value of that line, which is the
             // IP address
@@ -343,6 +326,8 @@ func main() {
             // attempt to obtain the intended redirect location of choice
 
             // add it to an array of redirect entries
+            redirect_log_contents = redirect_log_contents
+        }
 
         // Stat or create the redirect.log file
 
