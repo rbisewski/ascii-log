@@ -50,6 +50,9 @@ var (
     // Name of the whois log file on the webserver.
     whois_log = "whois.log"
 
+    // Name of the redirect log file on the webserver.
+    redirect_log = "redirect.log"
+
     // Parameter for the server type
     serverType = ""
 
@@ -88,8 +91,9 @@ func main() {
 
     // Variable to hold the contents of the new ip.log and whois log until
     // it is written to disk.
-    var ip_log_contents    = ""
-    var whois_log_contents = ""
+    var ip_log_contents       = ""
+    var whois_log_contents    = ""
+    var redirect_log_contents = ""
 
     // Parse the flags, if any.
     flag.Parse()
@@ -307,6 +311,47 @@ func main() {
         err = ioutil.WriteFile(web_location + whois_log,
                                []byte(whois_log_contents),
                                0755)
+
+        // TODO: implement this pseudo code
+
+        // for every line in the access.log file
+
+            // ensure the entry line is the latest date
+
+                // ... else skip to the next line
+
+            // attempt to obtain the 1st value of that line, which is the
+            // IP address
+
+            // trim it
+
+            // ensure it is a valid IPv4 address
+
+                // ... else skip to the next line
+
+            // attempt to obtain the 6th value of that line
+
+            // if no value is present...
+
+                // ... skip to the next line
+
+            // since the value *is* present, check if it is a '302'
+            // which refers to a found redirect code
+
+                // ... else skip to the next line
+
+            // attempt to obtain the intended redirect location of choice
+
+            // add it to an array of redirect entries
+
+        // Stat or create the redirect.log file
+
+        // if the stat/create process fails, exit the program
+
+        // having gotten this far, attempt to write the redirect data
+        // contents to the log file
+
+        // if an error occurs, terminate from the program
 
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
