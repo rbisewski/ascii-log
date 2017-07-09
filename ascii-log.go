@@ -290,6 +290,15 @@ func main() {
                                []byte(whois_log_contents),
                                0755)
 
+        // append the title to the redirect_log_contents
+        redirect_log_contents += "Redirection Entry Data\n\n"
+
+        // append the date to the redirect_log_contents on the next line
+        redirect_log_contents += "Generated on: " + datetime + "\n"
+        redirect_log_contents += "\n"
+        redirect_log_contents += "Log Data for " + latest_date_in_log + "\n"
+        redirect_log_contents += "-------------------------\n\n"
+
         // for every line...
         for _, line := range lines {
 
@@ -305,8 +314,8 @@ func main() {
             elements := strings.Split(line, " ")
 
             // safety check, ensure that element actually has a length
-            // of at least 6, since this needs the HTML response code
-            if len(elements) < 7 {
+            // of at least 8, since this needs the HTML response code
+            if len(elements) < 8 {
 
                 // ... else skip to the next line
                 continue
@@ -331,33 +340,84 @@ func main() {
                 continue
             }
 
-            // TODO: implement this pseudo code
-
             // attempt to obtain the 6th value of that line
+            html_code := elements[5]
 
             // if no value is present...
+            if len(html_code) < 1 {
 
                 // ... skip to the next line
+                continue
+            }
 
             // since the value *is* present, check if it is a '302'
-            // which refers to a found redirect code
+            // which refers to a `Found` redirect code
+            if html_code != "302" {
 
                 // ... else skip to the next line
+                continue
+            }
 
             // attempt to obtain the intended redirect location of choice
+            redirect_location := elements[7]
 
-            // add it to an array of redirect entries
-            redirect_log_contents = redirect_log_contents
+            // safety check, ensure the value is at least 1 character long
+            if len(redirect_location) < 1 {
+                continue
+            }
+
+            // attempt to trim it
+            redirect_location = strings.Trim(redirect_location, "\"")
+
+            // safety check, ensure the value is at least 1 character long
+            if len(redirect_location) < 1 {
+                continue
+            }
+
+            // since the \t character tends to get mangled easily, add a
+            // buffer of single-space characters instead to the IPv4
+            // addresses
+            space_formatted_ip_address := ip
+            for len(space_formatted_ip_address) < 16 {
+                space_formatted_ip_address += " "
+            }
+
+            // assemble all of the currently gathered info into a log line
+            assembled_line_string := space_formatted_ip_address + " | " +
+              html_code + " | " + redirect_location + "\n"
+
+            // append it to the log contents of redirect entries
+            redirect_log_contents += assembled_line_string
         }
 
-        // Stat or create the redirect.log file
+        // if no entries were added to the redirect.log, then add a short
+        // message noting that there were no addresses at this time
+        if len(redirect_log_contents) < 1 {
+            redirect_log_contents = "No redirections listed at this time."
+        }
 
-        // if the stat/create process fails, exit the program
+        // attempt to stat() the ip.log file, else create it if it does
+        // not currently exist
+        err = statOrCreateFile(web_location + redirect_log)
+
+        // if an error occurred during stat(), yet the program was unable
+        // to recover or recreate the file, then exit the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
 
         // having gotten this far, attempt to write the redirect data
         // contents to the log file
+        err = ioutil.WriteFile(web_location + redirect_log,
+                               []byte(redirect_log_contents),
+                               0755)
 
         // if an error occurs, terminate from the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
 
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
