@@ -301,16 +301,37 @@ func main() {
                 continue
             }
 
-            // TODO: implement this pseudo code
+            // attempt to split that line via spaces
+            elements := strings.Split(line, " ")
+
+            // safety check, ensure that element actually has a length
+            // of at least 6, since this needs the HTML response code
+            if len(elements) < 7 {
+
+                // ... else skip to the next line
+                continue
+            }
 
             // attempt to obtain the 1st value of that line, which is the
             // IP address
+            ip := elements[0]
 
             // trim it
+            ip = strings.Trim(ip, " ")
 
-            // ensure it is a valid IPv4 address
+            // ensure that the ip address is valid length
+            //
+            // 0.0.0.0 --> 8 chars (min)
+            //
+            // 123.123.123.123 --> 15 chars (max)
+            //
+            if len(ip) < 8 || len(ip) > 15 {
 
                 // ... else skip to the next line
+                continue
+            }
+
+            // TODO: implement this pseudo code
 
             // attempt to obtain the 6th value of that line
 
