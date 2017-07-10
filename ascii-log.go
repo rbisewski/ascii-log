@@ -341,6 +341,14 @@ func main() {
                 continue
             }
 
+            //
+            // TODO: this is broken since the lines are split up into
+            //       space-separated pieces; consider creating a regex
+            //       that looks for something like...
+            //
+            //       /\" 302 \d/
+            //
+
             // attempt to obtain the 6th value of that line
             html_code := elements[5]
 
