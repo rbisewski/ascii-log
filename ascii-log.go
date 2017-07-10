@@ -397,7 +397,7 @@ func main() {
         // if no entries were added to the redirect.log, then add a short
         // message noting that there were no addresses at this time
         if lines_added_to_redirect < 1 {
-            redirect_log_contents = "No redirections listed at this time."
+            redirect_log_contents += "No redirections listed at this time."
         }
 
         // attempt to stat() the ip.log file, else create it if it does
