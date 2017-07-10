@@ -300,7 +300,8 @@ func main() {
         redirect_log_contents += "-------------------------\n\n"
 
         // compile a regex to search for 302 found-redirections
-        //302_regex := regexp.MustCompile(`" 302 \[[0-9]+\]`)
+        redirect_capture := "\" 302 [0-9]{1,15} \"([0-9a-zA-Z:/-.]{2,64})\" "
+        redirect_regex := regexp.MustCompile(redirect_capture)
 
         // for every line...
         lines_added_to_redirect := 0
@@ -341,6 +342,14 @@ func main() {
             if len(ip) < 8 || len(ip) > 15 {
 
                 // ... else skip to the next line
+                continue
+            }
+
+            // check if the line contains the 302 pattern
+            verify = redirect_regex.FindString(line)
+
+            // skip a line if the entry is not the latest date
+            if len(verify) < 1 {
                 continue
             }
 
