@@ -300,6 +300,7 @@ func main() {
         redirect_log_contents += "-------------------------\n\n"
 
         // for every line...
+        lines_added_to_redirect := 0
         for _, line := range lines {
 
             // verify that a match could be found
@@ -388,11 +389,14 @@ func main() {
 
             // append it to the log contents of redirect entries
             redirect_log_contents += assembled_line_string
+
+            // increment the line counter
+            lines_added_to_redirect++
         }
 
         // if no entries were added to the redirect.log, then add a short
         // message noting that there were no addresses at this time
-        if len(redirect_log_contents) < 1 {
+        if lines_added_to_redirect < 1 {
             redirect_log_contents = "No redirections listed at this time."
         }
 
