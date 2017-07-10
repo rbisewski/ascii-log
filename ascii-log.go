@@ -299,6 +299,9 @@ func main() {
         redirect_log_contents += "Log Data for " + latest_date_in_log + "\n"
         redirect_log_contents += "-------------------------\n\n"
 
+        // compile a regex to search for 302 found-redirections
+        //302_regex := regexp.MustCompile(`" 302 \[[0-9]+\]`)
+
         // for every line...
         lines_added_to_redirect := 0
         for _, line := range lines {
