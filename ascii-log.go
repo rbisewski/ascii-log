@@ -353,16 +353,16 @@ func main() {
                 continue
             }
 
-            //
-            // TODO: this is broken since the lines are split up into
-            //       space-separated pieces; consider creating a regex
-            //       that looks for something like...
-            //
-            //       /\" 302 \d/
-            //
+            // breakup the (potential) redirection section into pieces
+            redirect_pieces := strings.Split(redirect_chunk, " ")
 
-            // attempt to obtain the 6th value of that line
-            html_code := elements[5]
+            // safety check, ensure that there are at least 4 pieces
+            if len(redirect_pieces) < 4 {
+                continue
+            }
+
+            // attempt to obtain the HTML response code
+            html_code := redirect_pieces[1]
 
             // if no value is present...
             if len(html_code) < 1 {
@@ -380,7 +380,7 @@ func main() {
             }
 
             // attempt to obtain the intended redirect location of choice
-            redirect_location := elements[7]
+            redirect_location := redirect_pieces[3]
 
             // safety check, ensure the value is at least 1 character long
             if len(redirect_location) < 1 {
