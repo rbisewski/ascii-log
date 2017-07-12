@@ -190,6 +190,9 @@ func main() {
             // grab the first element, that is the IP address
             ip := elements[0]
 
+            //
+            // TODO: consider adding proper IP validation
+            //
             // ensure that the ip address is valid length
             //
             // 0.0.0.0 --> 8 chars (min)
@@ -333,6 +336,9 @@ func main() {
             // trim it
             ip = strings.Trim(ip, " ")
 
+            //
+            // TODO: consider adding proper IP validation
+            //
             // ensure that the ip address is valid length
             //
             // 0.0.0.0 --> 8 chars (min)
