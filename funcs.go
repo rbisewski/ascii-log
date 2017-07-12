@@ -22,6 +22,15 @@ import (
     "strconv"
 )
 
+//! Validate an IPv4 address
+//! TODO: complete this
+/*
+ * @param     string      /path/to/file
+ *
+ * @return    bool        whether or not this is true
+ */
+//func validateIPv4Address(ip string) (bool)
+
 //! Convert a file into a string array as per a given separator
 /*
  * @param     string      /path/to/file
