@@ -190,16 +190,8 @@ func main() {
             // grab the first element, that is the IP address
             ip := elements[0]
 
-            //
-            // TODO: consider adding proper IP validation
-            //
-            // ensure that the ip address is valid length
-            //
-            // 0.0.0.0 --> 8 chars (min)
-            //
-            // 123.123.123.123 --> 15 chars (max)
-            //
-            if len(ip) < 8 || len(ip) > 15 {
+            // determine if this is a valid IPv4 address
+            if !isValidIPv4Address(ip) {
                 continue
             }
 
@@ -336,18 +328,8 @@ func main() {
             // trim it
             ip = strings.Trim(ip, " ")
 
-            //
-            // TODO: consider adding proper IP validation
-            //
-            // ensure that the ip address is valid length
-            //
-            // 0.0.0.0 --> 8 chars (min)
-            //
-            // 123.123.123.123 --> 15 chars (max)
-            //
-            if len(ip) < 8 || len(ip) > 15 {
-
-                // ... else skip to the next line
+            // determine if this is a valid IPv4 address
+            if !isValidIPv4Address(ip) {
                 continue
             }
 

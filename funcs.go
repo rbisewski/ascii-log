@@ -23,13 +23,36 @@ import (
 )
 
 //! Validate an IPv4 address
-//! TODO: complete this
 /*
- * @param     string      /path/to/file
+ * @param     string    /path/to/file
  *
- * @return    bool        whether or not this is true
+ * @return    bool      whether or not this is true
  */
-//func validateIPv4Address(ip string) (bool)
+func isValidIPv4Address(ip string) (bool) {
+
+    // input validation
+    if len(ip) < 1 {
+        return false
+    }
+
+    //
+    // TODO: consider adding proper IP validation
+    //
+    // ensure that the ip address is valid length
+    //
+    // 0.0.0.0 --> 8 chars (min)
+    //
+    // 123.123.123.123 --> 15 chars (max)
+    //
+    if len(ip) < 8 || len(ip) > 15 {
+
+        // ... else skip to the next line
+        return false
+    }
+
+    // otherwise it appears to be a proper IPv4
+    return true
+}
 
 //! Convert a file into a string array as per a given separator
 /*
