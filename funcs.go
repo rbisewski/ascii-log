@@ -35,9 +35,6 @@ func isValidIPv4Address(ip string) (bool) {
         return false
     }
 
-    //
-    // TODO: consider adding proper IP validation
-    //
     // ensure that the ip address is valid length
     //
     // 0.0.0.0 --> 8 chars (min)
@@ -45,10 +42,33 @@ func isValidIPv4Address(ip string) (bool) {
     // 123.123.123.123 --> 15 chars (max)
     //
     if len(ip) < 8 || len(ip) > 15 {
-
-        // ... else skip to the next line
         return false
     }
+
+    // attempt to split the string into pieces via the '.' char
+    ip_pieces := strings.Split(ip, ".")
+
+    // ensure that there are at least 4 pieces
+    if len(ip_pieces) != 4 {
+        return false
+    }
+
+    // for every oct piece of the IPv4 address...
+    for _, oct := range ip_pieces {
+
+        // ensure it has a length of at least 1
+        if len(oct) < 1 {
+            return false
+        }
+
+        // TODO: implement this pseudo code
+
+        // convert the ip_piece string to an integer
+
+        // ensure that the integer is between 0 and 255
+    }
+
+    // TODO: check for bogons as well
 
     // otherwise it appears to be a proper IPv4
     return true
