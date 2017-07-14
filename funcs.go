@@ -27,10 +27,49 @@ import (
  * @param     string    /path/to/file
  *
  * @return    bool      whether or not this is true
+ *
+ * TODO: add more logic to this function
  */
-//func isValidIPv6Address(ip string) (bool) {
-//    TODO: complete this function
-//}
+func isValidIPv6Address(ip string) (bool) {
+
+    // input validation
+    if len(ip) < 1 {
+        return false
+    }
+
+    // attempt to split the string into pieces via the ':' char
+    ip_pieces := strings.Split(ip, ":")
+
+    // safety check, ensure there is at least one piece
+    if len(ip_pieces) < 1 {
+        return false
+    }
+
+    // for every hexadecimal piece of the IPv6 address...
+    for _, hexa := range ip_pieces {
+
+        // ensure it has a length between 1 and 4
+        if len(hexa) < 1 || len(hexa) > 4 {
+            return false
+        }
+
+        // convert the ip_piece string to an integer
+        hexa_as_uint, err := strconv.ParseUint(hexa, 0, 16)
+
+        // if an error occurs, go ahead and return false
+        if err != nil {
+            return false
+        }
+
+        // if greater than 0xFFFF pass back a false
+        if hexa_as_uint > 65535 {
+            return false
+        }
+    }
+
+    // if all the tests passed, go ahead and return true
+    return true
+}
 
 //! Validate an IPv4 address
 /*
