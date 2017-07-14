@@ -22,6 +22,16 @@ import (
     "strconv"
 )
 
+//! Validate an IPv6 address
+/*
+ * @param     string    /path/to/file
+ *
+ * @return    bool      whether or not this is true
+ */
+//func isValidIPv6Address(ip string) (bool) {
+//    TODO: complete this function
+//}
+
 //! Validate an IPv4 address
 /*
  * @param     string    /path/to/file
@@ -39,7 +49,7 @@ func isValidIPv4Address(ip string) (bool) {
     //
     // 0.0.0.0 --> 8 chars (min)
     //
-    // 123.123.123.123 --> 15 chars (max)
+    // 127.123.123.123 --> 15 chars (max)
     //
     if len(ip) < 8 || len(ip) > 15 {
         return false
@@ -61,14 +71,20 @@ func isValidIPv4Address(ip string) (bool) {
             return false
         }
 
-        // TODO: implement this pseudo code
-
         // convert the ip_piece string to an integer
+        oct_as_uint, err := strconv.ParseUint(oct, 0, 10)
 
-        // ensure that the integer is between 0 and 255
+        // if an error occurred, throw back a false
+        if err != nil {
+            return false
+        }
+
+        // ensure that the integer is between 0 and 255; actually it is a
+        // unsigned int at this point, so only need check if > 255
+        if oct_as_uint > 255 {
+            return false
+        }
     }
-
-    // TODO: check for bogons as well
 
     // otherwise it appears to be a proper IPv4
     return true

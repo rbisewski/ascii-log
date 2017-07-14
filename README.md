@@ -4,9 +4,12 @@ A cut and dry golang application to generate daily data from log file
 entries of common servers, such as nginx or apache and output it to a
 text file so it can be accessed via w3m or lynx or wget.
 
-Specifically it takes IP address data and executes a simple hostname
-lookup for the purposes of examining what name is currently assigned
-at the moment of the server request.
+Specifically it takes IPv4 address data from the access.log files and
+conducts the following:
+
+* hostname lookup
+* whois lookup
+* records server requests of HTML code 302
 
 Feel free to fork it and use it for other projects if you find it
 useful.
@@ -19,7 +22,9 @@ The following is needed in order for this to function as intended:
 * Linux kernel 4.0+
 * cron
 * golang 1.6+
+* host
 * apache / nginx
+* whois
 
 Older kernels could still give some kind of result, but I *think* most of
 the newer versions of golang require newer kernels. Feel free to email me if
@@ -53,6 +58,8 @@ since it has greater compatibility with more distros.
 2) Consider cleaning up any remaining logs, if they are no longer needed.
 
     rm /var/www/html/data/ip.log
+    rm /var/www/html/data/redirect.log
+    rm /var/www/html/data/whois.log
 
 
 # TODOs
