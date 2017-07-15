@@ -89,6 +89,9 @@ func main() {
     // Variable to hold the extracted IP addresses
     var ip_addresses = make(map[string] int)
 
+    // Variable to hold a generic log header
+    var generic_log_header = ""
+
     // Variable to hold the contents of the new ip.log and whois log until
     // it is written to disk.
     var ip_log_contents string       = ""
@@ -226,11 +229,21 @@ func main() {
         // attempt to grab the current day/month/year
         datetime := time.Now().Format(time.UnixDate)
 
-        // append the date to the ip_log_contents on the next line
-        ip_log_contents += "Generated on: " + datetime + "\n"
-        ip_log_contents += "\n"
-        ip_log_contents += "Log Data for " + latest_date_in_log + "\n"
-        ip_log_contents += "-------------------------\n\n"
+        // safety check, ensure this actually got a meaningful string
+        if len(datetime) < 1 {
+            fmt.Println("Warning: Improper system date-time value" +
+              "detected!\n")
+            os.Exit(1)
+        }
+
+        // assemble the generic log header used by all of the logs
+        generic_log_header += "Generated on: " + datetime + "\n"
+        generic_log_header += "\n"
+        generic_log_header += "Log Data for " + latest_date_in_log + "\n"
+        generic_log_header += "-------------------------\n\n"
+
+        // append the generic log header to the ip.log file
+        ip_log_contents += generic_log_header
 
         // append the ip_strings content to this point of the log; it will
         // either contain the "IPv4 Address + Daily Count" or a message stating
@@ -261,10 +274,7 @@ func main() {
         whois_log_contents += "Whois Entry Data\n\n"
 
         // append the date to the whois_log_contents on the next line
-        whois_log_contents += "Generated on: " + datetime + "\n"
-        whois_log_contents += "\n"
-        whois_log_contents += "Log Data for " + latest_date_in_log + "\n"
-        whois_log_contents += "-------------------------\n\n"
+        whois_log_contents += generic_log_header
 
         // append the whois entry strings to the whois log contents
         whois_log_contents += whois_strings
@@ -289,10 +299,7 @@ func main() {
         redirect_log_contents += "Redirection Entry Data\n\n"
 
         // append the date to the redirect_log_contents on the next line
-        redirect_log_contents += "Generated on: " + datetime + "\n"
-        redirect_log_contents += "\n"
-        redirect_log_contents += "Log Data for " + latest_date_in_log + "\n"
-        redirect_log_contents += "-------------------------\n\n"
+        redirect_log_contents += generic_log_header
 
         // compile a regex to search for 302 found-redirections
         redirect_capture := "\" 302 [0-9]{1,15} \"(.{2,64})\" "
