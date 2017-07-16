@@ -236,6 +236,10 @@ func main() {
             os.Exit(1)
         }
 
+        // since this runs on an infinite loop, clear the contents of
+        // the previous generic log header
+        generic_log_header = ""
+
         // assemble the generic log header used by all of the logs
         generic_log_header += "Generated on: " + datetime + "\n"
         generic_log_header += "\n"
