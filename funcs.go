@@ -129,6 +129,51 @@ func isValidIPv4Address(ip string) (bool) {
     return true
 }
 
+//! Convert a given IPv4 address to a x.x.x.0/24 CIDR notation
+/*
+ * @param    string    an IPv4 address
+ *
+ * @return   string    result as a /24
+ * @return   error     error message, if any
+ */
+func obtainSlash24FromIpv4(ip string) (string, error) {
+
+    // input validation
+    if len(ip) < 1 {
+        return "", fmt.Errorf("obtainSlash24FromIpv4() --> invalid input")
+    }
+
+    // ensure the given value is actually an IP4 address
+    if !isValidIPv4Address(ip) {
+        return "", fmt.Errorf("obtainSlash24FromIpv4() --> improper " +
+          "IPv4 address given")
+    }
+
+    // variable declaration
+    ipv4_slash24_cidr := ""
+
+    // separate the IPv4 address string into pieces
+    ip_pieces := strings.Split(ip, ".")
+
+    // ensure that there are at least 4 pieces
+    if len(ip_pieces) != 4 {
+        return "", fmt.Errorf("obtainSlash24FromIpv4() --> non-standard " +
+          "IPv4 address")
+    }
+
+    // reconstruct the IPv4 address string
+    ipv4_slash24_cidr += ip_pieces[0]
+    ipv4_slash24_cidr += "."
+    ipv4_slash24_cidr += ip_pieces[1]
+    ipv4_slash24_cidr += "."
+    ipv4_slash24_cidr += ip_pieces[2]
+    ipv4_slash24_cidr += "."
+    ipv4_slash24_cidr += "0/24"
+
+    // having gone this far, return the adjusted result
+    return ipv4_slash24_cidr, nil
+}
+
 //! Convert a file into a string array as per a given separator
 /*
  * @param     string      /path/to/file
