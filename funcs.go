@@ -17,6 +17,7 @@ import (
     "net"
     "os"
     "os/exec"
+    "regexp"
     "strings"
     "sort"
     "strconv"
@@ -438,7 +439,8 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
  *
  * TODO: this function could use more testing
  */
-func obtainWhoisEntries(ip_map map[string] int) (string, error) {
+func obtainWhoisEntries(ip_map map[string] int,
+  whois_map map[string] string) (string, error) {
 
     // input validation
     if len(ip_map) < 1 {
@@ -517,19 +519,23 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
             continue
         }
 
-        //
-        // TODO: implement the below pseudo code; also consider the
-        //       creation of a whois summary involving IPs and their
-        //       respective countries
-        //
-
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
+        re := regexp.MustCompile("[cC]ountry:")
 
         // attempt to obtain the country of a given IP address
+        whois_regex_country_result := re.FindString(trimmed_string)
 
         // trim the result
+        whois_regex_country_result =
+          strings.Trim(whois_regex_country_result, " ")
 
         // ensure that the result still has 2 letters
+        if len(whois_regex_country_result) < 2 {
+            whois_regex_country_result = "N/A"
+        }
+
+        // append it to the whois map
+        whois_map[ip] = whois_regex_country_result
 
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "

@@ -50,6 +50,9 @@ var (
     // Name of the whois log file on the webserver.
     whois_log = "whois.log"
 
+    // Name of the whois log file on the webserver.
+    whois_summary_log = "whois_summary.log"
+
     // Name of the redirect log file on the webserver.
     redirect_log = "redirect.log"
 
@@ -88,6 +91,9 @@ func main() {
 
     // Variable to hold the extracted IP addresses
     var ip_addresses = make(map[string] int)
+
+    // Variable to hold the extracted whois countries
+    var whois_summary = make(map[string] string)
 
     // Variable to hold a generic log header
     var generic_log_header = ""
@@ -266,7 +272,8 @@ func main() {
         }
 
         // attempt to obtain the whois entries, as a string
-        whois_strings, err := obtainWhoisEntries(ip_addresses)
+        whois_strings, err := obtainWhoisEntries(ip_addresses,
+          whois_summary)
 
         // if an error occurred, terminate the program
         if err != nil {
@@ -298,6 +305,9 @@ func main() {
         err = ioutil.WriteFile(web_location + whois_log,
                                []byte(whois_log_contents),
                                0755)
+
+        // TODO: add logic to write whois summary data to the summary log
+        //       somewhere around here
 
         // append the title to the redirect_log_contents
         redirect_log_contents += "Redirection Entry Data\n\n"
