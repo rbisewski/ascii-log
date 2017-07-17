@@ -517,6 +517,20 @@ func obtainWhoisEntries(ip_map map[string] int) (string, error) {
             continue
         }
 
+        //
+        // TODO: implement the below pseudo code; also consider the
+        //       creation of a whois summary involving IPs and their
+        //       respective countries
+        //
+
+        // compile a regex that looks for "country: XX\n" or "Country: XX\n"
+
+        // attempt to obtain the country of a given IP address
+
+        // trim the result
+
+        // ensure that the result still has 2 letters
+
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "
         whois_strings += ip
