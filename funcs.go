@@ -524,7 +524,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
         //
         // TODO: fix this so it grabs the country code
         //
-        re := regexp.MustCompile("[cC]ountry: ")
+        re := regexp.MustCompile("[cC]ountry:[^\n]{2,32}\n")
 
         // attempt to obtain the country of a given IP address
         whois_regex_country_result := re.FindString(trimmed_string)
@@ -532,11 +532,25 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
         // trim the result
         whois_regex_country_result =
           strings.Trim(whois_regex_country_result, " ")
+        whois_regex_country_result =
+          strings.Trim(whois_regex_country_result, "\n")
 
         // ensure that the result still has 2 letters
         if len(whois_regex_country_result) < 2 {
             whois_regex_country_result = "N/A"
         }
+
+        // split up the string using spaces
+        wr_pieces := strings.Split(whois_regex_country_result, " ")
+
+        // safety check, ensure there is at least 1 pieces
+        if len(wr_pieces) < 1 {
+            whois_regex_country_result = "N/A"
+        }
+
+        //
+        // TODO: search thru the pieces for the country code result
+        //
 
         //
         // append it to the whois map
