@@ -303,7 +303,7 @@ func main() {
                                0755)
 
         // append the title to the whois_log_contents
-        whois_summary_log_contents += "Whois Entry Data\n\n"
+        whois_summary_log_contents += "Whois Summary Entry Data\n\n"
 
         // append the date to the whois_log_contents on the next line
         whois_summary_log_contents += generic_log_header

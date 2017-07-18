@@ -519,8 +519,12 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
             continue
         }
 
+        //
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
-        re := regexp.MustCompile("[cC]ountry:")
+        //
+        // TODO: fix this so it grabs the country code
+        //
+        re := regexp.MustCompile("[cC]ountry: ")
 
         // attempt to obtain the country of a given IP address
         whois_regex_country_result := re.FindString(trimmed_string)
@@ -534,7 +538,11 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
             whois_regex_country_result = "N/A"
         }
 
+        //
         // append it to the whois map
+        //
+        // TODO: adjust this so that the spacing is fixed
+        //
         whois_summary_strings += ip + " | " + whois_regex_country_result + "\n"
 
         // otherwise it's probably good, then go ahead and append it
