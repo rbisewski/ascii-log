@@ -430,29 +430,29 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
 //! Convert the global IP address map to string containing whois entries
 /*
- * @param     map        string map containing ip addresses and counts
+ * @param     map       string map containing ip addresses and counts
  *
- * @return    string     whois + ip, with hyphens and newlines
- *                       separating them.
- *            error      error message, if any
+ * @return    string    whois data of every given ip
+ * @return    string    summarized version of the above
+ * @return    error     error message, if any
  *
  *
  * TODO: this function could use more testing
  */
-func obtainWhoisEntries(ip_map map[string] int,
-  whois_map map[string] string) (string, error) {
+func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
 
     // input validation
     if len(ip_map) < 1 {
-        return "", fmt.Errorf("obtainWhoisEntries() --> invalid input")
+        return "", "", fmt.Errorf("obtainWhoisEntries() --> invalid input")
     }
 
     // variable declaration
-    var whois_strings string  = ""
-    var entries_appended uint = 0
-    var tmp_str_array         = make([]string, 0)
-    var tmp_str_buffer        = ""
-    var trimmed_string        = ""
+    var whois_strings string         = ""
+    var whois_summary_strings string = ""
+    var entries_appended uint        = 0
+    var tmp_str_array                = make([]string, 0)
+    var tmp_str_buffer               = ""
+    var trimmed_string               = ""
     var err error
     var result bytes.Buffer
 
@@ -535,7 +535,7 @@ func obtainWhoisEntries(ip_map map[string] int,
         }
 
         // append it to the whois map
-        whois_map[ip] = whois_regex_country_result
+        whois_summary_strings += ip + " | " + whois_regex_country_result + "\n"
 
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "
@@ -556,7 +556,7 @@ func obtainWhoisEntries(ip_map map[string] int,
     }
 
     // everything worked fine, so return the completed string contents
-    return whois_strings, nil
+    return whois_strings, whois_summary_strings, nil
 }
 
 //! Attempt to execute the whois command.
