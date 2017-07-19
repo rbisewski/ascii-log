@@ -130,6 +130,37 @@ func isValidIPv4Address(ip string) (bool) {
     return true
 }
 
+//! Take a given IP address and space buffer it so that it is always 15
+//! characters long.
+/*
+ * @param    string    IPv4 address
+ *
+ * @param    string    space-formatted IPv4 address
+ * @param    error     error message, if any
+ */
+func spaceFormatIPv4(ip string) (string, error) {
+
+    // input validation
+    if len(ip) < 1 || len(ip) > 15 {
+        return "", fmt.Errorf("spaceFormatIPv4() --> invalid input\n");
+    }
+
+    // ensure this is actually a IPv4 address
+    if !isValidIPv4Address(ip) {
+        return "", fmt.Errorf("spaceFormatIPv4() --> given IP is not " +
+          "an IPv4 address\n")
+    }
+
+    // attempt to format the IPv4 address
+    space_formatted_ip_address := ip
+    for len(space_formatted_ip_address) < 16 {
+        space_formatted_ip_address += " "
+    }
+
+    // return the formatted IPv4 string
+    return space_formatted_ip_address, nil
+}
+
 //! Convert a given IPv4 address to a x.x.x.0/24 CIDR notation
 /*
  * @param    string    an IPv4 address
@@ -401,9 +432,11 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
 
         // since the \t character tends to get mangled easily, add a buffer
         // of single-space characters instead to the IPv4 addresses
-        space_formatted_ip_address := ip
-        for len(space_formatted_ip_address) < 16 {
-            space_formatted_ip_address += " "
+        space_formatted_ip_address, err := spaceFormatIPv4(ip)
+
+        // if an error occurs, skip to the next element
+        if err != nil {
+           continue
         }
 
         // append that count | address |  hostname
@@ -565,9 +598,11 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
 
         // since the \t character tends to get mangled easily, add a buffer
         // of single-space characters instead to the IPv4 addresses
-        space_formatted_ip_address := ip
-        for len(space_formatted_ip_address) < 16 {
-            space_formatted_ip_address += " "
+        space_formatted_ip_address, err := spaceFormatIPv4(ip)
+
+        // if an error occurs, skip to the next element
+        if err != nil {
+           continue
         }
 
         // append it to the whois map

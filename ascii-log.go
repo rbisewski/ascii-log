@@ -431,9 +431,11 @@ func main() {
             // since the \t character tends to get mangled easily, add a
             // buffer of single-space characters instead to the IPv4
             // addresses
-            space_formatted_ip_address := ip
-            for len(space_formatted_ip_address) < 16 {
-                space_formatted_ip_address += " "
+            space_formatted_ip_address, err := spaceFormatIPv4(ip)
+
+            // if an error occurs, skip to the next element
+            if err != nil {
+               continue
             }
 
             // assemble all of the currently gathered info into a log line
