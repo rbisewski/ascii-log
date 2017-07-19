@@ -521,9 +521,6 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
 
         //
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
-        //
-        // TODO: fix this so it grabs the country code
-        //
         re := regexp.MustCompile("[cC]ountry:[^\n]{2,32}\n")
 
         // attempt to obtain the country of a given IP address
@@ -548,16 +545,34 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
             whois_regex_country_result = "N/A"
         }
 
-        //
-        // TODO: search thru the pieces for the country code result
-        //
+        // search thru the pieces for the country code result
+        for _, code := range wr_pieces {
 
-        //
+            // if the code is not equal to 2
+            if len(code) != 2 {
+                continue
+            }
+
+            // TODO: consider adding logic here via regex to ensure the
+            //       code is actually two alphabet characters
+
+            // assign the code to the whois country result
+            whois_regex_country_result = code
+
+            // leave the loop
+            break
+        }
+
+        // since the \t character tends to get mangled easily, add a buffer
+        // of single-space characters instead to the IPv4 addresses
+        space_formatted_ip_address := ip
+        for len(space_formatted_ip_address) < 16 {
+            space_formatted_ip_address += " "
+        }
+
         // append it to the whois map
-        //
-        // TODO: adjust this so that the spacing is fixed
-        //
-        whois_summary_strings += ip + " | " + whois_regex_country_result + "\n"
+        whois_summary_strings += space_formatted_ip_address +
+          " | " + whois_regex_country_result + "\n"
 
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "
