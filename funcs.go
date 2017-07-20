@@ -367,15 +367,16 @@ func obtainLatestDate(line_data string) (string, error) {
 //! Convert the global IP address map to an array of sorted ipEntry objects
 /*
  * @param     map        string map containing ip addresses and counts
+ * @param     map        string map containing ip/whois country data
  *
- * @return    string     ip address + count strings, with newlines
- *                       separating them.
+ * @return    string     lines that contain "count | ip | country | host \n"
  *            error      error message, if any
  */
-func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
+func convertIpAddressMapToString(ip_map map[string] int,
+  whois_country_map map[string] string) (string, error) {
 
     // input validation
-    if len(ip_map) < 1 {
+    if len(ip_map) < 1 || len(whois_country_map) < 1 {
         return "", fmt.Errorf("convertIpAddressMapToString() --> " +
           "invalid input")
     }
@@ -412,6 +413,15 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         // grab the count
         count := ip_map[ip]
 
+        // lookup the country code
+        country_code := whois_country_map[ip]
+
+        // safety check, fallback to "--" if the country code is blank or
+        // nil or unusual length
+        if len(country_code) != 2 {
+            country_code = "--"
+        }
+
         // take the given IP address and attempt to grab the hostname
         hostnames, err := net.LookupAddr(ip)
 
@@ -444,6 +454,8 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
         ip_strings += " | "
         ip_strings += space_formatted_ip_address
         ip_strings += " | "
+        ip_strings += country_code
+        ip_strings += " | "
         ip_strings += first_hostname
         ip_strings += "\n"
 
@@ -466,26 +478,27 @@ func convertIpAddressMapToString(ip_map map[string] int) (string, error) {
  * @param     map       string map containing ip addresses and counts
  *
  * @return    string    whois data of every given ip
- * @return    string    summarized version of the above
+ * @return    map       string map containing whois country data
  * @return    error     error message, if any
  *
  *
  * TODO: this function could use more testing
  */
-func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
+func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
+  error) {
 
     // input validation
     if len(ip_map) < 1 {
-        return "", "", fmt.Errorf("obtainWhoisEntries() --> invalid input")
+        return "", nil, fmt.Errorf("obtainWhoisEntries() --> invalid input")
     }
 
     // variable declaration
-    var whois_strings string         = ""
-    var whois_summary_strings string = ""
-    var entries_appended uint        = 0
-    var tmp_str_array                = make([]string, 0)
-    var tmp_str_buffer               = ""
-    var trimmed_string               = ""
+    var whois_strings string  = ""
+    var whois_summary_map     = make(map[string] string)
+    var entries_appended uint = 0
+    var tmp_str_array         = make([]string, 0)
+    var tmp_str_buffer        = ""
+    var trimmed_string        = ""
     var err error
     var result bytes.Buffer
 
@@ -567,7 +580,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
 
         // ensure that the result still has 2 letters
         if len(whois_regex_country_result) < 2 {
-            whois_regex_country_result = "N/A"
+            whois_regex_country_result = "--"
         }
 
         // split up the string using spaces
@@ -575,7 +588,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
 
         // safety check, ensure there is at least 1 pieces
         if len(wr_pieces) < 1 {
-            whois_regex_country_result = "N/A"
+            whois_regex_country_result = "--"
         }
 
         // search thru the pieces for the country code result
@@ -596,18 +609,8 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
             break
         }
 
-        // since the \t character tends to get mangled easily, add a buffer
-        // of single-space characters instead to the IPv4 addresses
-        space_formatted_ip_address, err := spaceFormatIPv4(ip)
-
-        // if an error occurs, skip to the next element
-        if err != nil {
-           continue
-        }
-
         // append it to the whois map
-        whois_summary_strings += space_formatted_ip_address +
-          " | " + whois_regex_country_result + "\n"
+        whois_summary_map[ip] = whois_regex_country_result
 
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "
@@ -628,7 +631,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, string, error) {
     }
 
     // everything worked fine, so return the completed string contents
-    return whois_strings, whois_summary_strings, nil
+    return whois_strings, whois_summary_map, nil
 }
 
 //! Attempt to execute the whois command.

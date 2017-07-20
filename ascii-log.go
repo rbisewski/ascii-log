@@ -50,9 +50,6 @@ var (
     // Name of the whois log file on the webserver.
     whois_log = "whois.log"
 
-    // Name of the whois log file on the webserver.
-    whois_summary_log = "whois_summary.log"
-
     // Name of the redirect log file on the webserver.
     redirect_log = "redirect.log"
 
@@ -98,7 +95,6 @@ func main() {
     // Variable to hold the log contents written to disk.
     var ip_log_contents string            = ""
     var whois_log_contents string         = ""
-    var whois_summary_log_contents string = ""
     var redirect_log_contents string      = ""
 
     // Parse the flags, if any.
@@ -206,8 +202,43 @@ func main() {
             ip_addresses[ip]++
         }
 
+        // attempt to obtain the whois entries, as a string
+        whois_strings, whois_summary_map, err := obtainWhoisEntries(ip_addresses)
+
+        // if an error occurred, terminate the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
+        // append the title to the whois_log_contents
+        whois_log_contents += "Whois Entry Data\n\n"
+
+        // append the date to the whois_log_contents on the next line
+        whois_log_contents += generic_log_header
+
+        // append the whois entry strings to the whois log contents
+        whois_log_contents += whois_strings
+
+        // attempt to stat() the whois.log file, else create it if it does
+        // not currently exist
+        err = statOrCreateFile(web_location + whois_log)
+
+        // if an error occurred during stat(), yet the program was unable
+        // to recover or recreate the file, then exit the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
+        // attempt to write the string contents to the ip.log file
+        err = ioutil.WriteFile(web_location + whois_log,
+                               []byte(whois_log_contents),
+                               0755)
+
         // convert the ip addresses map into an array of strings
-        ip_strings, err := convertIpAddressMapToString(ip_addresses)
+        ip_strings, err := convertIpAddressMapToString(ip_addresses,
+          whois_summary_map)
 
         // if an error occurred, terminate from the program
         if err != nil {
@@ -263,71 +294,6 @@ func main() {
                                0755)
 
         // if an error occurred, terminate the program
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-
-        // attempt to obtain the whois entries, as a string
-        whois_strings, whois_summary_strings, err := obtainWhoisEntries(ip_addresses)
-
-        // if an error occurred, terminate the program
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-
-        // append the title to the whois_log_contents
-        whois_log_contents += "Whois Entry Data\n\n"
-
-        // append the date to the whois_log_contents on the next line
-        whois_log_contents += generic_log_header
-
-        // append the whois entry strings to the whois log contents
-        whois_log_contents += whois_strings
-
-        // attempt to stat() the whois.log file, else create it if it does
-        // not currently exist
-        err = statOrCreateFile(web_location + whois_log)
-
-        // if an error occurred during stat(), yet the program was unable
-        // to recover or recreate the file, then exit the program
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-
-        // attempt to write the string contents to the ip.log file
-        err = ioutil.WriteFile(web_location + whois_log,
-                               []byte(whois_log_contents),
-                               0755)
-
-        // append the title to the whois_log_contents
-        whois_summary_log_contents += "Whois Summary Entry Data\n\n"
-
-        // append the date to the whois_log_contents on the next line
-        whois_summary_log_contents += generic_log_header
-
-        // append the whois entry strings to the whois log contents
-        whois_summary_log_contents += whois_summary_strings
-
-        // attempt to stat() the whois.log file, else create it if it does
-        // not currently exist
-        err = statOrCreateFile(web_location + whois_summary_log)
-
-        // if an error occurred during stat(), yet the program was unable
-        // to recover or recreate the file, then exit the program
-        if err != nil {
-            fmt.Println(err)
-            os.Exit(1)
-        }
-
-        // attempt to write the string contents to the ip.log file
-        err = ioutil.WriteFile(web_location + whois_summary_log,
-                               []byte(whois_summary_log_contents),
-                               0755)
-
-        // if an error occurs, terminate the program
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
