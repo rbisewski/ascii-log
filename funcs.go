@@ -591,6 +591,9 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
             whois_regex_country_result = "--"
         }
 
+        // assemble a regex to test the country code
+        re_country_code := regexp.MustCompile("^[A-Za-z]{2}$")
+
         // search thru the pieces for the country code result
         for _, code := range wr_pieces {
 
@@ -599,8 +602,13 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
                 continue
             }
 
-            // TODO: consider adding logic here via regex to ensure the
-            //       code is actually two alphabet characters
+            // ensure the code is actually two alphabet characters
+            verify := re_country_code.FindString(code)
+
+            // skip a line if the entry is not the latest date
+            if len(verify) != 2 {
+                continue
+            }
 
             // assign the code to the whois country result
             whois_regex_country_result = code
