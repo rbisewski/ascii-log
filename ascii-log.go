@@ -202,6 +202,26 @@ func main() {
             ip_addresses[ip]++
         }
 
+        // attempt to grab the current day/month/year
+        datetime := time.Now().Format(time.UnixDate)
+
+        // safety check, ensure this actually got a meaningful string
+        if len(datetime) < 1 {
+            fmt.Println("Warning: Improper system date-time value" +
+              "detected!\n")
+            os.Exit(1)
+        }
+
+        // since this runs on an infinite loop, clear the contents of
+        // the previous generic log header
+        generic_log_header = ""
+
+        // assemble the generic log header used by all of the logs
+        generic_log_header += "Generated on: " + datetime + "\n"
+        generic_log_header += "\n"
+        generic_log_header += "Log Data for " + latest_date_in_log + "\n"
+        generic_log_header += "-------------------------\n\n"
+
         // attempt to obtain the whois entries, as a string
         whois_strings, whois_summary_map, err := obtainWhoisEntries(ip_addresses)
 
@@ -259,26 +279,6 @@ func main() {
 
         // append the title to the ip_log_contents
         ip_log_contents += "IP Address Counts Data\n\n"
-
-        // attempt to grab the current day/month/year
-        datetime := time.Now().Format(time.UnixDate)
-
-        // safety check, ensure this actually got a meaningful string
-        if len(datetime) < 1 {
-            fmt.Println("Warning: Improper system date-time value" +
-              "detected!\n")
-            os.Exit(1)
-        }
-
-        // since this runs on an infinite loop, clear the contents of
-        // the previous generic log header
-        generic_log_header = ""
-
-        // assemble the generic log header used by all of the logs
-        generic_log_header += "Generated on: " + datetime + "\n"
-        generic_log_header += "\n"
-        generic_log_header += "Log Data for " + latest_date_in_log + "\n"
-        generic_log_header += "-------------------------\n\n"
 
         // append the generic log header to the ip.log file
         ip_log_contents += generic_log_header
