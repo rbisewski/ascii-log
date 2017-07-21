@@ -97,6 +97,9 @@ func main() {
     var whois_log_contents string         = ""
     var redirect_log_contents string      = ""
 
+    // Variable to hold the number of lines added to the redirect log
+    var lines_added_to_redirect uint = 0
+
     // Parse the flags, if any.
     flag.Parse()
 
@@ -166,6 +169,14 @@ func main() {
             os.Exit(1)
         }
 
+        // append the title and header to the redirect_log_contents
+        redirect_log_contents += "Redirection Entry Data\n\n"
+        redirect_log_contents += generic_log_header
+
+        // compile a regex to search for 302 found-redirections
+        redirect_capture := "\" 302 [0-9]{1,15} \"(.{2,64})\" "
+        redirect_regex := regexp.MustCompile(redirect_capture)
+
         // turn the latest data string into a regex
         re := regexp.MustCompile(latest_date_in_log)
 
@@ -200,6 +211,76 @@ func main() {
             // Since the IP address is indeed roughly valid, go ahead and add
             // it to the global array.
             ip_addresses[ip]++
+
+            // check if the line contains the 302 pattern
+            redirect_chunk := redirect_regex.FindString(line)
+
+            // skip a line if the entry is not the latest date
+            if len(redirect_chunk) < 1 {
+                continue
+            }
+
+            // breakup the (potential) redirection section into pieces
+            redirect_pieces := strings.Split(redirect_chunk, " ")
+
+            // safety check, ensure that there are at least 4 pieces
+            if len(redirect_pieces) < 4 {
+                continue
+            }
+
+            // attempt to obtain the HTML response code
+            html_code := redirect_pieces[1]
+
+            // if no value is present...
+            if len(html_code) < 1 {
+
+                // ... skip to the next line
+                continue
+            }
+
+            // since the value *is* present, check if it is a '302'
+            // which refers to a `Found` redirect code
+            if html_code != "302" {
+
+                // ... else skip to the next line
+                continue
+            }
+
+            // attempt to obtain the intended redirect location of choice
+            redirect_location := redirect_pieces[3]
+
+            // safety check, ensure the value is at least 1 character long
+            if len(redirect_location) < 1 {
+                continue
+            }
+
+            // attempt to trim it
+            redirect_location = strings.Trim(redirect_location, "\"")
+
+            // safety check, ensure the value is at least 1 character long
+            if len(redirect_location) < 1 {
+                continue
+            }
+
+            // since the \t character tends to get mangled easily, add a
+            // buffer of single-space characters instead to the IPv4
+            // addresses
+            space_formatted_ip_address, err := spaceFormatIPv4(ip)
+
+            // if an error occurs, skip to the next element
+            if err != nil {
+               continue
+            }
+
+            // assemble all of the currently gathered info into a log line
+            assembled_line_string := space_formatted_ip_address + " | " +
+              html_code + " | " + redirect_location + "\n"
+
+            // append it to the log contents of redirect entries
+            redirect_log_contents += assembled_line_string
+
+            // increment the line counter
+            lines_added_to_redirect++
         }
 
         // attempt to grab the current day/month/year
@@ -297,122 +378,6 @@ func main() {
         if err != nil {
             fmt.Println(err)
             os.Exit(1)
-        }
-
-        // append the title to the redirect_log_contents
-        redirect_log_contents += "Redirection Entry Data\n\n"
-
-        // append the date to the redirect_log_contents on the next line
-        redirect_log_contents += generic_log_header
-
-        // compile a regex to search for 302 found-redirections
-        redirect_capture := "\" 302 [0-9]{1,15} \"(.{2,64})\" "
-        redirect_regex := regexp.MustCompile(redirect_capture)
-
-        // for every line...
-        lines_added_to_redirect := 0
-        for _, line := range lines {
-
-            // verify that a match could be found
-            verify := re.FindString(line)
-
-            // skip a line if the entry is not the latest date
-            if len(verify) < 1 {
-                continue
-            }
-
-            // attempt to split that line via spaces
-            elements := strings.Split(line, " ")
-
-            // safety check, ensure that element actually has a length
-            // of at least 8, since this needs the HTML response code
-            if len(elements) < 8 {
-
-                // ... else skip to the next line
-                continue
-            }
-
-            // attempt to obtain the 1st value of that line, which is the
-            // IP address
-            ip := elements[0]
-
-            // trim it
-            ip = strings.Trim(ip, " ")
-
-            // determine if this is a valid IPv4 address
-            if !isValidIPv4Address(ip) {
-                continue
-            }
-
-            // check if the line contains the 302 pattern
-            redirect_chunk := redirect_regex.FindString(line)
-
-            // skip a line if the entry is not the latest date
-            if len(redirect_chunk) < 1 {
-                continue
-            }
-
-            // breakup the (potential) redirection section into pieces
-            redirect_pieces := strings.Split(redirect_chunk, " ")
-
-            // safety check, ensure that there are at least 4 pieces
-            if len(redirect_pieces) < 4 {
-                continue
-            }
-
-            // attempt to obtain the HTML response code
-            html_code := redirect_pieces[1]
-
-            // if no value is present...
-            if len(html_code) < 1 {
-
-                // ... skip to the next line
-                continue
-            }
-
-            // since the value *is* present, check if it is a '302'
-            // which refers to a `Found` redirect code
-            if html_code != "302" {
-
-                // ... else skip to the next line
-                continue
-            }
-
-            // attempt to obtain the intended redirect location of choice
-            redirect_location := redirect_pieces[3]
-
-            // safety check, ensure the value is at least 1 character long
-            if len(redirect_location) < 1 {
-                continue
-            }
-
-            // attempt to trim it
-            redirect_location = strings.Trim(redirect_location, "\"")
-
-            // safety check, ensure the value is at least 1 character long
-            if len(redirect_location) < 1 {
-                continue
-            }
-
-            // since the \t character tends to get mangled easily, add a
-            // buffer of single-space characters instead to the IPv4
-            // addresses
-            space_formatted_ip_address, err := spaceFormatIPv4(ip)
-
-            // if an error occurs, skip to the next element
-            if err != nil {
-               continue
-            }
-
-            // assemble all of the currently gathered info into a log line
-            assembled_line_string := space_formatted_ip_address + " | " +
-              html_code + " | " + redirect_location + "\n"
-
-            // append it to the log contents of redirect entries
-            redirect_log_contents += assembled_line_string
-
-            // increment the line counter
-            lines_added_to_redirect++
         }
 
         // if no entries were added to the redirect.log, then add a short
