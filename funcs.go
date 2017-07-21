@@ -565,12 +565,25 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
             continue
         }
 
-        //
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
         re := regexp.MustCompile("[cC]ountry:[^\n]{2,32}\n")
 
+        //
+        // TODO: adjust this so it obtains all of the country data present
+        //       in the whois entry.
+        //
         // attempt to obtain the country of a given IP address
         whois_regex_country_result := re.FindString(trimmed_string)
+
+        //
+        // TODO: implement this pseudo code
+        //
+
+        // for every whois country line...
+
+            // if there is more than one entry, take the last one since
+            // the others are likely ARIN/RIPE/etc data and therefore not
+            // quite as useful as the actual origin country network.
 
         // trim the result
         whois_regex_country_result =
