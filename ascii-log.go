@@ -93,9 +93,9 @@ func main() {
     var generic_log_header = ""
 
     // Variable to hold the log contents written to disk.
-    var ip_log_contents string            = ""
-    var whois_log_contents string         = ""
-    var redirect_log_contents string      = ""
+    var ip_log_contents string       = ""
+    var whois_log_contents string    = ""
+    var redirect_log_contents string = ""
 
     // Variable to hold the number of lines added to the redirect log
     var lines_added_to_redirect uint = 0
@@ -168,6 +168,26 @@ func main() {
             fmt.Println(err)
             os.Exit(1)
         }
+
+        // attempt to grab the current day/month/year
+        datetime := time.Now().Format(time.UnixDate)
+
+        // safety check, ensure this actually got a meaningful string
+        if len(datetime) < 1 {
+            fmt.Println("Warning: Improper system date-time value" +
+              "detected!\n")
+            os.Exit(1)
+        }
+
+        // since this runs on an infinite loop, clear the contents of
+        // the previous generic log header
+        generic_log_header = ""
+
+        // assemble the generic log header used by all of the logs
+        generic_log_header += "Generated on: " + datetime + "\n"
+        generic_log_header += "\n"
+        generic_log_header += "Log Data for " + latest_date_in_log + "\n"
+        generic_log_header += "-------------------------\n\n"
 
         // append the title and header to the redirect_log_contents
         redirect_log_contents += "Redirection Entry Data\n\n"
@@ -282,26 +302,6 @@ func main() {
             // increment the line counter
             lines_added_to_redirect++
         }
-
-        // attempt to grab the current day/month/year
-        datetime := time.Now().Format(time.UnixDate)
-
-        // safety check, ensure this actually got a meaningful string
-        if len(datetime) < 1 {
-            fmt.Println("Warning: Improper system date-time value" +
-              "detected!\n")
-            os.Exit(1)
-        }
-
-        // since this runs on an infinite loop, clear the contents of
-        // the previous generic log header
-        generic_log_header = ""
-
-        // assemble the generic log header used by all of the logs
-        generic_log_header += "Generated on: " + datetime + "\n"
-        generic_log_header += "\n"
-        generic_log_header += "Log Data for " + latest_date_in_log + "\n"
-        generic_log_header += "-------------------------\n\n"
 
         // attempt to obtain the whois entries, as a string
         whois_strings, whois_summary_map, err := obtainWhoisEntries(ip_addresses)
