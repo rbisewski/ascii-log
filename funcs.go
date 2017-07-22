@@ -480,9 +480,6 @@ func convertIpAddressMapToString(ip_map map[string] int,
  * @return    string    whois data of every given ip
  * @return    map       string map containing whois country data
  * @return    error     error message, if any
- *
- *
- * TODO: this function could use more testing
  */
 func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
   error) {
