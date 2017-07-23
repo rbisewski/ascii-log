@@ -86,8 +86,14 @@ func main() {
     // String variable to hold eventual output, as well error variable.
     var err error = nil
 
-    // Variable to hold the extracted IP addresses
+    // Variables to hold the extracted IP addresses and to hold ip
+    // addresses to consider blocking, if enough data is gathered
+    //
+    // TODO: adjust the code so that it will add the blocked IPv4s
+    //       to a firewall for some period of time; e.g. 48 hours
+    //
     var ip_addresses = make(map[string] int)
+    var blocked_ip_addresses = []string{}
 
     // Variable to hold a generic log header
     var generic_log_header = ""
@@ -298,6 +304,10 @@ func main() {
 
             // append it to the log contents of redirect entries
             redirect_log_contents += assembled_line_string
+
+            // finally, add the ip address to the list of IPv4 addresses to
+            // consider blocking eventually
+            blocked_ip_addresses = append(blocked_ip_addresses, ip)
 
             // increment the line counter
             lines_added_to_redirect++
