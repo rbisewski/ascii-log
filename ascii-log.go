@@ -419,6 +419,32 @@ func main() {
             os.Exit(1)
         }
 
+        // cycle thru all of the ip address counts...
+        for ip, count := range ip_addresses {
+
+            // TODO: implement this code
+            //
+            // skip if the country is one of the following:
+            //
+            // * US --> United States
+            // * CA --> Canada
+            // * UK --> United Kingdom
+            // * FR --> France
+            // * DE --> Germany
+            //
+
+            // skip to the next if count is less than 10
+            if count < 10 {
+                continue
+            }
+
+            // go ahead an append to the list of blocked ips
+            blocked_ip_addresses = append(blocked_ip_addresses, ip)
+        }
+
+        // TODO: as mentioned earlier, consider adding the blocked IPv4
+        //       addresses to a firewall at this point in the program
+
         // if daemon mode is disabled, then exit this loop
         if !daemonMode {
             break
