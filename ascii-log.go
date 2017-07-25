@@ -422,8 +422,14 @@ func main() {
         // cycle thru all of the ip address counts...
         for ip, count := range ip_addresses {
 
-            // TODO: implement this code
-            //
+            // obtain the country code of this IP address
+            given_country_code := whois_summary_map[ip]
+
+            // safety check, ensure the result is not nil
+            if len(given_country_code) != 2 || given_country_code == ".." {
+                continue
+            }
+
             // skip if the country is one of the following:
             //
             // * US --> United States
@@ -431,7 +437,13 @@ func main() {
             // * UK --> United Kingdom
             // * FR --> France
             // * DE --> Germany
+            // * NL --> Netherlands
             //
+            if given_country_code == "US" || given_country_code == "CA" ||
+              given_country_code == "UK" || given_country_code == "FR" ||
+              given_country_code == "DE" || given_country_code == "NL" {
+                continue
+            }
 
             // skip to the next if count is less than 10
             if count < 10 {
