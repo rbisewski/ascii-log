@@ -1,5 +1,5 @@
 //
-// Utility functions for the 
+// Utility functions for the hostname / whois / redirect content.
 //
 
 //
@@ -531,9 +531,9 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
         // attempt to obtain the whois record
         result, err = runWhoisCommand(ip)
 
-        // if an error occurs, break out of the loop
+        // if an error occurs, continue on to the next IP
         if err != nil {
-            break
+            continue
         }
 
         // convert the byte buffer to a string
