@@ -53,6 +53,9 @@ var (
     // Name of the redirect log file on the webserver.
     redirect_log = "redirect.log"
 
+    // Name of the blocked log file on the webserver.
+    blocked_log = "blocked.log"
+
     // Parameter for the server type
     serverType = ""
 
@@ -102,6 +105,7 @@ func main() {
     var ip_log_contents string       = ""
     var whois_log_contents string    = ""
     var redirect_log_contents string = ""
+    var blocked_log_contents string  = ""
 
     // Variable to hold the number of lines added to the redirect log
     var lines_added_to_redirect uint = 0
@@ -234,8 +238,8 @@ func main() {
                 continue
             }
 
-            // Since the IP address is indeed roughly valid, go ahead and add
-            // it to the global array.
+            // since the ip address is valid, go ahead and add it to the
+            // global array of ip addresses.
             ip_addresses[ip]++
 
             // check if the line contains the 302 pattern
@@ -452,6 +456,40 @@ func main() {
 
             // go ahead an append to the list of blocked ips
             blocked_ip_addresses = append(blocked_ip_addresses, ip)
+        }
+
+        // attempt to stat() the blocked.log file, else create it if it does
+        // not currently exist
+        err = statOrCreateFile(web_location + blocked_log)
+
+        // if an error occurred during stat(), yet the program was unable
+        // to recover or recreate the file, then exit the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
+        }
+
+        // append all of the blocked IPs together, newline separated
+        for _, ip := range blocked_ip_addresses {
+            blocked_log_contents += ip + "\n"
+        }
+
+        // if no entries were added to the blocked.log, then add a short
+        // message noting that there were no addresses at this time
+        if len(blocked_ip_addresses) < 1 {
+            blocked_log_contents += "No IPs blocked at this time."
+        }
+
+        // having gotten this far, attempt to write the blocked data
+        // contents to the log file
+        err = ioutil.WriteFile(web_location + blocked_log,
+                               []byte(blocked_log_contents),
+                               0755)
+
+        // if an error occurs, terminate from the program
+        if err != nil {
+            fmt.Println(err)
+            os.Exit(1)
         }
 
         // TODO: as mentioned earlier, consider adding the blocked IPv4
