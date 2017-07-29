@@ -574,7 +574,12 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
             continue
         }
 
+        //
+        // TODO: certain Brazilian authorities follow an alternate regex,
+        //       consider fixing this at sometime in the future
+        //
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
+        //
         re := regexp.MustCompile("[cC]ountry:[^\n]{2,32}\n")
 
         // variable to hold the country result
@@ -637,7 +642,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
         }
 
         // append it to the whois map
-        whois_summary_map[ip] = whois_regex_country_result
+        whois_summary_map[ip] = strings.ToUpper(whois_regex_country_result)
 
         // otherwise it's probably good, then go ahead and append it
         whois_strings += "Whois Entry for the following: "
