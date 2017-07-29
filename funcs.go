@@ -531,9 +531,21 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
         // attempt to obtain the whois record
         result, err = runWhoisCommand(ip)
 
-        // if an error occurs, continue on to the next IP
+        // if an error occurs at this point...
         if err != nil {
-            continue
+
+            // dump the error code to a string
+            error_code := err.Error()
+
+            // if the error code was not 2, then move on to the next IP
+            if error_code != "exit status 2" {
+                continue
+            }
+
+            // if there is no partial output, then proceed to the next IP
+            if len(result.String()) < 1 {
+                continue
+            }
         }
 
         // convert the byte buffer to a string
