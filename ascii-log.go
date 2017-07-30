@@ -311,14 +311,13 @@ func main() {
 
             // finally, add the ip address to the list of IPv4 addresses to
             // consider blocking eventually
-            blocked_ip_addresses = append(blocked_ip_addresses, ip)
+            if (!isStringInArray(ip, blocked_ip_addresses)) {
+                blocked_ip_addresses = append(blocked_ip_addresses, ip)
+            }
 
             // increment the line counter
             lines_added_to_redirect++
         }
-
-        // TODO: take the `blocked_ip_addresses` array and remove all
-        //       duplicate entries
 
         // attempt to obtain the whois entries, as a string
         whois_strings, whois_summary_map, err := obtainWhoisEntries(ip_addresses)

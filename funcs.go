@@ -694,3 +694,28 @@ func runWhoisCommand(args ...string) (bytes.Buffer, error) {
     // occurred
     return output, nil
 }
+
+//! Check if a given string value is present in a string array
+/*
+ *  @param    string      string value in question
+ *  @param    []string    array of string values
+ *
+ *  @return   bool        whether or not it is present
+ */
+func isStringInArray(str string, stringArray []string) bool {
+
+    // input validation
+    if len(str) < 1 || str == "" || len(stringArray) < 1 {
+        return false
+    }
+
+    // cycle thru the array
+    for _, s := range stringArray {
+        if str == s {
+            return true
+        }
+    }
+
+    // otherwise assume it is not present
+    return false
+}
