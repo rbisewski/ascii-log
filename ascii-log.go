@@ -351,7 +351,7 @@ func main() {
         // attempt to write the string contents to the ip.log file
         err = ioutil.WriteFile(web_location + whois_log,
                                []byte(whois_log_contents),
-                               0755)
+                               0644)
 
         // convert the ip addresses map into an array of strings
         ip_strings, err := convertIpAddressMapToString(ip_addresses,
@@ -388,7 +388,7 @@ func main() {
         // attempt to write the string contents to the ip.log file
         err = ioutil.WriteFile(web_location + ip_log,
                                []byte(ip_log_contents),
-                               0755)
+                               0644)
 
         // if an error occurred, terminate the program
         if err != nil {
@@ -417,7 +417,7 @@ func main() {
         // contents to the log file
         err = ioutil.WriteFile(web_location + redirect_log,
                                []byte(redirect_log_contents),
-                               0755)
+                               0644)
 
         // if an error occurs, terminate from the program
         if err != nil {
@@ -486,7 +486,7 @@ func main() {
         // contents to the log file
         err = ioutil.WriteFile(web_location + blocked_log,
                                []byte(blocked_log_contents),
-                               0755)
+                               0644)
 
         // if an error occurs, terminate from the program
         if err != nil {
