@@ -609,7 +609,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
 
         // if the Brazilian registro is found, go ahead and assign it a
         // country code of BR since this domain probably belongs to Brazil
-        if len(verify_br) > 1 {
+        if len(verify_br) > 0 {
             whois_regex_country_result = "BR"
         }
 
