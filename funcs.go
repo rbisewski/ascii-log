@@ -574,12 +574,7 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
             continue
         }
 
-        //
-        // TODO: certain Brazilian authorities follow an alternate regex,
-        //       consider fixing this at sometime in the future
-        //
         // compile a regex that looks for "country: XX\n" or "Country: XX\n"
-        //
         re := regexp.MustCompile("[cC]ountry:[^\n]{2,32}\n")
 
         // variable to hold the country result
@@ -607,10 +602,21 @@ func obtainWhoisEntries(ip_map map[string] int) (string, map[string] string,
             whois_regex_country_result = "--"
         }
 
+        // certain Brazilian authorities follow an alternate regex,
+        // so as a workaround for now, go ahead and test for this
+        re_br := regexp.MustCompile("whois.registro.br")
+        verify_br := re_br.FindAllString(trimmed_string, 1)
+
+        // if the Brazilian registro is found, go ahead and assign it a
+        // country code of BR since this domain probably belongs to Brazil
+        if len(verify_br) > 1 {
+            whois_regex_country_result = "BR"
+        }
+
         // split up the string using spaces
         wr_pieces := strings.Split(whois_regex_country_result, " ")
 
-        // safety check, ensure there is at least 1 pieces
+        // safety check, ensure there are one or more pieces
         if len(wr_pieces) < 1 {
             whois_regex_country_result = "--"
         }
