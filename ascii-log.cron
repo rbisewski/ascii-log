@@ -1,4 +1,4 @@
 #
-# Run the ascii-log program at 02:30 and 14:30 every day.
+# Run the ascii-log program at 08:30 and 20:30 every day.
 #
-30 2,14 * * * root /usr/bin/ascii-log >/dev/null 2>&1
+30 8,20 * * * root /usr/bin/ascii-log >/dev/null 2>&1
