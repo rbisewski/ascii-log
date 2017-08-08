@@ -11,6 +11,12 @@ conducts the following:
 * whois lookup
 * records server requests of HTML code 302
 
+This program will allow check for odd numbers of anonymous connections,
+which it will add to a file called 'blocked.log'; should the end
+user desire, the contents of this file can be tracked by an external
+firewall program (e.g. ufw). That said, by default, nothing happens
+to the contents of this file.
+
 Feel free to fork it and use it for other projects if you find it
 useful.
 
@@ -57,6 +63,7 @@ since it has greater compatibility with more distros.
 
 2) Consider cleaning up any remaining logs, if they are no longer needed.
 
+    rm /var/www/html/data/blocked.log
     rm /var/www/html/data/ip.log
     rm /var/www/html/data/redirect.log
     rm /var/www/html/data/whois.log

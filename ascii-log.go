@@ -502,18 +502,18 @@ func main() {
             break
         }
 
-        // take the current time and increment 24 hours
+        // take the current time and increment 12 hours
         currentTime := time.Now()
-        oneDayLater := currentTime.AddDate(0,0,1)
+        twelveHoursLater := currentTime.Add(time.Duration(12) * time.Hour)
 
-        // since the user has selected daemon mode, wait 24 hours
+        // since the user has selected daemon mode, wait 12 hours
         for {
 
             // grab the current time
             currentTime = time.Now()
 
-            // if an entire day has passed, go ahead and break
-            if currentTime.After(oneDayLater) {
+            // if 12 hours have passed, go ahead and break
+            if currentTime.After(twelveHoursLater) {
                 break
             }
         }
