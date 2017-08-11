@@ -451,8 +451,8 @@ func main() {
                 continue
             }
 
-            // skip to the next if count is less than 10
-            if count < 10 {
+            // skip to the next if count is less than 5
+            if count < 5 {
                 continue
             }
 
@@ -471,15 +471,36 @@ func main() {
             os.Exit(1)
         }
 
-        // append all of the blocked IPs together, newline separated
-        for _, ip := range blocked_ip_addresses {
-            blocked_log_contents += ip + "\n"
-        }
-
         // if no entries were added to the blocked.log, then add a short
         // message noting that there were no addresses at this time
         if len(blocked_ip_addresses) < 1 {
             blocked_log_contents += "No IPs blocked at this time."
+
+        // if there *are* IPs that have been requested to block, attempt to
+        // generate a list of IP addresses to block, in the form of an
+        // nginx 'sites-available' configuration
+        } else if len(blocked_ip_addresses) >= 1 && serverType == "nginx" {
+
+            // start with a location chunk
+            blocked_log_contents += "location / {\n"
+
+            // append all of the blocked IPs together, newline separated
+            for _, ip := range blocked_ip_addresses {
+                blocked_log_contents += "deny " + ip + ";\n"
+            }
+
+            // terminate with a curl bracket, so signal the end of the
+            // server location
+            blocked_log_contents += "}\n"
+
+        // otherwise the server is not an nginx, so just print out a list
+        // of IPs that would have been blocked
+        } else {
+
+            // append all of the blocked IPs together, newline separated
+            for _, ip := range blocked_ip_addresses {
+                blocked_log_contents += ip + "\n"
+            }
         }
 
         // having gotten this far, attempt to write the blocked data
